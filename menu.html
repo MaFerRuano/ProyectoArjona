@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <style>
+        body {
+            background-color: #f4f1ea; /* Un color tipo papel viejo */
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+        }
+        h2 { color: #333; border-bottom: 2px solid #333; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 15px 0; }
+        a { 
+            text-decoration: none; 
+            color: #555; 
+            font-weight: bold; 
+            display: block;
+        }
+        a:hover { color: #b91d1d; } /* Color rojo Arjona al pasar el mouse */
+        
+        /* Animación para el vinilo que quieres */
+        .vinilo {
+            width: 100px;
+            animation: girar 5s linear infinite;
+            border-radius: 50%;
+        }
+        @keyframes girar {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h2>Arjona</h2>
+    <ul>
+        <!-- El target="contenido" hace que la página abra en el lado derecho -->
+        <li><a href="introduccion.html" target="contenido">1. Introducción</a></li>
+        <li><a href="biografia.html" target="contenido">2. Biografía</a></li>
+        <li><a href="discografia.html" target="contenido">3. Discografía</a></li>
+        <li><a href="poetica.html" target="contenido">4. Estilo Poético</a></li>
+        <li><a href="galeria.html" target="contenido">5. Galería</a></li>
+        <li><a href="acerca_de.html" target="contenido">6. Acerca de</a></li>
+    </ul>
+
+    <hr>
+    <!-- Aquí puedes pegar el código de Spotify que te guste -->
+    <p>Escuchando ahora:</p>
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2SId8vO144R7K986m4pWCH?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</body>
+</html>
