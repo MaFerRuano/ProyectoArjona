@@ -4,137 +4,74 @@
     <meta charset="UTF-8">
     <style>
         body {
-            background-color: #f4f1ea; 
-            font-family: 'Helvetica', sans-serif;
-            padding: 20px;
+            background-color: #1a1a1a; /* Fondo oscuro para que sea elegante */
+            font-family: 'Courier New', Courier, monospace;
             margin: 0;
+            padding: 20px 10px;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        h2 { color: #333; border-bottom: 2px solid #333; font-family: 'Courier New', monospace; }
-        ul { list-style-type: none; padding: 0; flex-grow: 1; }
-        li { margin: 12px 0; }
-        a { text-decoration: none; color: #555; font-weight: bold; font-family: 'Courier New', monospace; }
-        a:hover { color: #b91d1d; }
-
-        /* --- DISEÑO INSPIRADO EN TU IMAGEN --- */
-        .playlist-container {
-            background-color: #ffffff;
-            border-radius: 35px;
-            padding: 25px;
-            position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-            margin-top: auto;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        /* El Disco Vinilo Grande a la izquierda */
-        .vinilo-visual {
-            position: absolute;
-            left: -90px;
-            top: 15%;
-            width: 180px;
-            height: 180px;
-            background: radial-gradient(circle, #222 0%, #000 30%, #111 40%, #000 60%, #222 100%);
-            border-radius: 50%;
-            z-index: 1;
-            box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
-            animation: girar 10s linear infinite;
-        }
-
-        /* Centro del disco con la foto de Arjona */
-        .centro-foto {
-            position: absolute;
-            top: 32%;
-            left: 32%;
-            width: 36%;
-            height: 36%;
-            border-radius: 50%;
-            border: 3px solid #fff;
-            background-image: url('arjona-intro.png');
-            background-size: cover;
-            background-position: center;
-        }
-
-        .user-info {
-            text-align: right;
-            font-size: 0.7rem;
-            color: #aaa;
-        }
-
-        .song-info {
-            text-align: right;
-            margin-top: 20px;
-            z-index: 2;
-        }
-
-        .song-info h3 { margin: 0; color: #4a90e2; font-size: 1.2rem; }
-        .song-info p { margin: 0; color: #888; font-size: 0.8rem; }
-
-        /* Botones de control estilo tu imagen */
-        .controls {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-play {
-            width: 35px;
-            height: 35px;
-            background-color: #d0e1f0;
-            border-radius: 10px;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: none;
-            color: #4a90e2;
+            color: #fff;
+            overflow-x: hidden;
         }
 
-        @keyframes girar {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        h2 { 
+            font-size: 1rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            border-bottom: 1px solid #b91d1d;
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        ul { 
+            list-style: none; 
+            padding: 0; 
+            width: 100%;
+        }
+
+        li { 
+            margin: 25px 0; 
+            text-align: center;
+        }
+
+        a { 
+            text-decoration: none; 
+            color: #aaa; 
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: block;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        /* Efecto al pasar el mouse */
+        a:hover { 
+            color: #fff; 
+            transform: scale(1.1);
+        }
+
+        /* Línea decorativa roja (Rojo Arjona) */
+        .linea {
+            height: 50px;
+            width: 2px;
+            background-color: #b91d1d;
+            margin-top: auto;
         }
     </style>
 </head>
 <body>
-
-    <h2>Arjona</h2>
+    <h2>RA</h2>
+    
     <ul>
-        <li><a href="introduccion.html" target="contenido">Home</a></li>
-        <li><a href="biografia.html" target="contenido">Biografía</a></li>
-        <li><a href="discografia.html" target="contenido">Playlist</a></li>
-        <li><a href="acerca_de.html" target="contenido">Equipo</a></li>
+        <li><a href="introduccion.html" target="contenido" title="Inicio">Intro</a></li>
+        <li><a href="biografia.html" target="contenido" title="Biografía">Bio</a></li>
+        <li><a href="discografia.html" target="contenido" title="Discografía">Discos</a></li>
+        <li><a href="galeria.html" target="contenido" title="Galería">Fotos</a></li>
+        <li><a href="acerca_de.html" target="contenido" title="Equipo">Info</a></li>
     </ul>
 
-    <div class="playlist-container">
-        <div class="user-info">
-            <span>@mafer_arjona</span><br>
-            <strong>23k seguidores</strong>
-        </div>
-
-        <div class="vinilo-visual">
-            <div class="centro-foto"></div>
-        </div>
-
-        <div class="song-info">
-            <h3>Fuiste tú</h3>
-            <p>Ricardo Arjona</p>
-        </div>
-
-        <div class="controls">
-            <button class="btn-play">II</button>
-            <button class="btn-play">▶</button>
-        </div>
-    </div>
-
+    <div class="linea"></div>
 </body>
 </html>
