@@ -42,30 +42,82 @@
             font-weight: bold;
             text-align: center;
         }
+
+        /* --- NUEVO ESTILO PARA EL EFECTO VINILO --- */
+        
+        /* Contenedor principal de la imagen: ahora es el fondo del vinilo */
         .imagen-intro {
             width: 100%;
-            height: 400px; /* Aumenté un poco la altura para que luzca mejor la foto */
+            height: 400px; /* Mantengo la altura */
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             border: 1px solid #ccc;
-            overflow: hidden; /* Para que la imagen no se salga del borde */
+            background-color: #faf9f6; /* El mismo fondo de la página */
+            position: relative; /* Necesario para posicionar el disco y la imagen */
         }
-        .imagen-intro img {
+
+        /* El Disco de Vinilo Negro (Hecho en CSS puro) */
+        .disco-vinilo {
+            width: 380px; /* Tamaño del disco */
+            height: 380px;
+            background: 
+                /* El agujero del centro */
+                radial-gradient(circle, #faf9f6 4%, transparent 5%),
+                /* El disco negro con sus surcos */
+                radial-gradient(circle, #000 0%, #111 20%, #000 40%, #111 60%, #000 80%, #111 100%);
+            border-radius: 50%; /* Hace que sea un círculo */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Sombra para dar relieve */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            
+            /* ANIMACIÓN DE GIRO: Descomenta la línea de abajo para que gire */
+            /* animation: girarVinilo 10s linear infinite; */
+        }
+
+        /* La etiqueta del centro: aquí va la imagen de Arjona */
+        .etiqueta-centro {
+            width: 150px; /* Tamaño de la etiqueta */
+            height: 150px;
+            border-radius: 50%; /* Hace que sea un círculo */
+            overflow: hidden; /* Corta la imagen en círculo */
+            border: 4px solid #fff; /* Borde blanco alrededor de la imagen */
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Sombra interna para efecto de papel */
+            position: absolute; /* Para que esté justo en el centro */
+            z-index: 10; /* Asegura que esté sobre el disco negro */
+        }
+
+        /* La imagen de Arjona dentro de la etiqueta */
+        .etiqueta-centro img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Esto hace que la imagen cubra todo el espacio sin deformarse */
+            object-fit: cover; /* Cubre todo el círculo sin deformarse */
         }
+
+        /* Definición de la animación de giro */
+        @keyframes girarVinilo {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ------------------------------------------- */
+
     </style>
 </head>
 <body>
 
 <div class="container">
+    
     <div class="imagen-intro">
-        <img src="arjona-intro.png" alt="Ricardo Arjona en el estudio">
+        <div class="disco-vinilo">
+            <div class="etiqueta-centro">
+                <img src="arjona-intro.png" alt="Ricardo Arjona - Vinilo Historias">
+            </div>
+        </div>
     </div>
-
     <h1>Ricardo Arjona</h1>
     <p class="subtitulo">"El animal nocturno que le canta a la realidad cotidiana."</p>
 
