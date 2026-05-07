@@ -27,6 +27,7 @@
             margin: 0 auto;
         }
 
+        /* Mantenemos el estilo glass para lo demás, pero más sutil */
         .glass-card {
             background: rgba(255, 255, 255, 0.08); 
             backdrop-filter: blur(6px);
@@ -37,25 +38,23 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
 
-        .perfil-box {
-            text-align: center;
-        }
-
         .firma-moderna {
             font-family: 'Homemade Apple', cursive;
             color: #b91d1d;
             font-size: 1.6rem;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .foto-perfil {
             width: 100%;
             max-width: 200px;
+            display: block;
+            margin: 0 auto 20px auto;
             border-radius: 15px;
             border: 4px solid white;
             box-shadow: 0 8px 15px rgba(0,0,0,0.1);
             transform: rotate(-1deg);
-            margin-bottom: 20px;
         }
 
         .titulo-seccion {
@@ -68,7 +67,12 @@
             display: block;
         }
 
-        /* --- ESTADÍSTICAS RÁPIDAS --- */
+        /* CONTENEDOR DE SPOTIFY SIN CUADRO BLANCO */
+        .spotify-libre {
+            width: 100%;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -79,14 +83,12 @@
         .stat-small {
             text-align: center;
             padding: 10px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
             border-radius: 15px;
         }
 
         .stat-small strong { color: #b91d1d; font-size: 1.2rem; display: block; }
-        .stat-small span { font-size: 0.6rem; text-transform: uppercase; color: #666; }
 
-        /* --- CURIOSIDADES --- */
         .curiosidad-box {
             font-family: 'Special Elite', serif;
             font-size: 0.8rem;
@@ -95,7 +97,7 @@
             background: rgba(255,255,255,0.2);
             padding: 15px;
             border-radius: 15px;
-            border-right: 4px solid #b91d1d;
+            border-left: 4px solid #b91d1d;
             margin-top: 20px;
         }
 
@@ -112,74 +114,46 @@
             transition: 0.3s;
             margin-top: 20px;
         }
-
-        .btn-action:hover { background: #901616; }
     </style>
 </head>
 <body>
 
     <div class="dashboard">
         
-        <!-- COLUMNA IZQUIERDA: EL ARTISTA -->
-        <div class="glass-card perfil-box">
+        <!-- IZQUIERDA -->
+        <div class="glass-card">
             <h1 class="firma-moderna">Ricardo Arjona</h1>
             <img src="arjona-intro.png" class="foto-perfil" alt="Arjona">
-            
-            <span class="titulo-seccion">Legado Musical</span>
             <div class="stats-grid">
-                <div class="stat-small">
-                    <strong>+80M</strong>
-                    <span>Discos Vendidos</span>
-                </div>
-                <div class="stat-small">
-                    <strong>15</strong>
-                    <span>Álbumes</span>
-                </div>
-                <div class="stat-small">
-                    <strong>1</strong>
-                    <span>Grammy</span>
-                </div>
-                <div class="stat-small">
-                    <strong>1</strong>
-                    <span>Latin Grammy</span>
-                </div>
+                <div class="stat-small"><strong>+80M</strong><span>Ventas</span></div>
+                <div class="stat-small"><strong>15</strong><span>Álbumes</span></div>
             </div>
         </div>
 
-        <!-- COLUMNA CENTRAL: MÚSICA Y CITA -->
-        <div style="display: flex; flex-direction: column; gap: 25px;">
-            <div class="glass-card" style="padding: 10px;">
-                <span class="titulo-seccion" style="margin: 10px;">Escuchar Ahora</span>
-                <iframe style="border-radius:15px" src="https://open.spotify.com/embed/track/3clS9vS_N2u9MuvW9vNCOK?utm_source=generator0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-            </div>
-
-            <div class="glass-card" style="font-family: 'Special Elite', serif; font-style: italic; text-align: center; color: #444;">
-                "Si el pasado te enseña, bienvenido sea... pero si el pasado te atrasa, déjalo que pase."
-            </div>
-        </div>
-
-        <!-- COLUMNA DERECHA: GENERALIDADES -->
-        <div class="glass-card">
-            <span class="titulo-seccion">¿Sabías qué?</span>
+        <!-- CENTRO: SPOTIFY LIBRE -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            <span class="titulo-seccion" style="text-align: center;">Escuchar Ahora</span>
             
+            <div class="spotify-libre">
+                <!-- El reproductor ahora respira fuera de cualquier caja -->
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3clS9vS_N2u9MuvW9vNCOK?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+
+            <div class="glass-card" style="font-family: 'Special Elite', serif; font-style: italic; text-align: center;">
+                "Si el pasado te enseña, bienvenido sea..."
+            </div>
+        </div>
+
+        <!-- DERECHA -->
+        <div class="glass-card">
+            <span class="titulo-seccion">Biografía Breve</span>
             <div class="curiosidad-box">
-                Ricardo fue un destacado jugador de baloncesto en la selección nacional de Guatemala antes de triunfar en la música.
+                Nacido en Jocotenango, Guatemala. Su lírica ha marcado a generaciones en toda Latinoamérica.
             </div>
-
-            <div class="curiosidad-box" style="border-right: none; border-left: 4px solid #b91d1d; margin-top: 15px;">
-                Su primer álbum, "Déjame decir que te amo", fue grabado en 1985, marcando el inicio de una carrera de más de 40 años.
+            <div class="curiosidad-box" style="border-left-color: #555;">
+                Ex-seleccionado nacional de baloncesto, un artista que rompe moldes.
             </div>
-
-            <div style="margin-top: 25px;">
-                <span class="titulo-seccion">Origen</span>
-                <p style="font-size: 0.85rem; color: #555;">
-                    <strong>Nacimiento:</strong> Jocotenango, Guatemala<br>
-                    <strong>Géneros:</strong> Pop latino, Balada, Rock<br>
-                    <strong>Ocupación:</strong> Cantautor, Músico, Productor
-                </p>
-            </div>
-
-            <button class="btn-action" onclick="location.href='biografia.html'">CONOCER SU HISTORIA</button>
+            <button class="btn-action" onclick="location.href='biografia.html'">LEER MÁS</button>
         </div>
 
     </div>
