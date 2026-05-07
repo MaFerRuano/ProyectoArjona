@@ -4,109 +4,77 @@
     <meta charset="UTF-8">
     <style>
         body {
-            /* Sin fondo para que sea transparente */
-            background: transparent; 
+            background: transparent; /* Sin fondo */
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            padding: 20px;
-            height: 100vh;
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between; /* Firma a la izquierda, links a la derecha */
+            align-items: center;
+            height: 100px;
             box-sizing: border-box;
-            /* Quitamos el borde sólido y dejamos algo más sutil */
-            border-right: 1px solid rgba(0,0,0,0.1);
-            transition: all 0.5s ease;
-            position: relative;
             overflow: hidden;
         }
 
         h2 { 
-            color: #333; 
-            border-bottom: 2px solid #333; 
-            margin-top: 0; 
-            font-size: 1.2rem;
-            letter-spacing: 2px;
+            color: #b91d1d; 
+            margin: 0; 
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            border: none;
         }
 
-        ul { list-style-type: none; padding: 0; }
-        li { margin: 15px 0; }
+        ul { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0;
+            display: flex; /* Pone los links uno a la par del otro */
+            gap: 25px;
+        }
 
         a { 
             text-decoration: none; 
             color: #555; 
             font-weight: bold; 
-            display: block;
-            padding: 8px;
-            border-radius: 5px;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            border-radius: 20px;
             transition: 0.3s;
         }
 
-        /* Color al pasar el mouse */
-        a:hover { color: #b91d1d; }
+        a:hover { 
+            color: #b91d1d; 
+        }
 
-        /* CLASE PARA LA PÁGINA SELECCIONADA */
+        /* Clase para la página seleccionada */
         .active {
-            color: #ffffff !important;
-            background-color: #b91d1d; /* Rojo Arjona */
-            box-shadow: 2px 4px 10px rgba(185, 29, 29, 0.3);
+            color: #fff !important;
+            background-color: #b91d1d;
+            box-shadow: 0 4px 10px rgba(185, 29, 29, 0.2);
         }
 
-        .btn-toggle {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            background: #b91d1d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 5px;
-            z-index: 100;
-        }
+        /* Quitamos el botón de esconder porque arriba ya no estorba tanto, 
+           pero si lo quieres mantener, se puede ajustar */
+        .btn-toggle { display: none; }
     </style>
 </head>
 <body>
-    <button class="btn-toggle" onclick="toggleMenu()">◀</button>
     
-    <h2 id="menuTitle">Arjona</h2>
+    <h2>ARJONA</h2>
+
     <ul id="menuList">
-        <li><a href="introduccion.html" target="contenido" onclick="setActive(this)">1. Introducción</a></li>
-        <li><a href="biografia.html" target="contenido" onclick="setActive(this)">2. Biografía</a></li>
-        <li><a href="discografia.html" target="contenido" onclick="setActive(this)">3. Discografía</a></li>
-        <li><a href="poetica.html" target="contenido" onclick="setActive(this)">4. Estilo Poético</a></li>
-        <li><a href="acerca_de.html" target="contenido" onclick="setActive(this)">5. Acerca de</a></li>
+        <li><a href="introduccion.html" target="contenido" onclick="setActive(this)" class="active">INTRO</a></li>
+        <li><a href="biografia.html" target="contenido" onclick="setActive(this)">BIO</a></li>
+        <li><a href="discografia.html" target="contenido" onclick="setActive(this)">DISCOS</a></li>
+        <li><a href="poetica.html" target="contenido" onclick="setActive(this)">POÉTICA</a></li>
+        <li><a href="acerca_de.html" target="contenido" onclick="setActive(this)">EQUIPO</a></li>
     </ul>
 
     <script>
-        let abierto = true;
-
-        // FUNCIÓN PARA CAMBIAR EL COLOR AL SELECCIONAR
         function setActive(element) {
-            // Quitamos la clase 'active' de todos los enlaces
             const links = document.querySelectorAll('a');
             links.forEach(link => link.classList.remove('active'));
-            
-            // Se la ponemos solo al que hicimos clic
             element.classList.add('active');
-        }
-
-        function toggleMenu() {
-            const fs = window.parent.document.getElementById('masterFrameset');
-            const btn = document.querySelector('.btn-toggle');
-            const title = document.getElementById('menuTitle');
-            const list = document.getElementById('menuList');
-            
-            if (abierto) {
-                fs.setAttribute('cols', '60, *'); 
-                btn.innerHTML = "▶";
-                title.style.display = 'none';
-                list.style.display = 'none';
-            } else {
-                fs.setAttribute('cols', '250, *'); 
-                btn.innerHTML = "◀";
-                title.style.display = 'block';
-                list.style.display = 'block';
-            }
-            abierto = !abierto;
         }
     </script>
 </body>
