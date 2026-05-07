@@ -3,213 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Special+Elite&family=Montserrat:wght@300;700&display=swap');
 
         body {
-            /* Nueva imagen de fondo */
+            /* Estiramos el fondo para que no tenga bordes */
             background-image: url('paper-background.jpg'); 
             background-size: cover;
-            background-attachment: fixed;
             background-position: center;
-            font-family: 'Special Elite', serif;
-            margin: 0;
-            padding: 0;
-            color: #2c2c2c;
-            overflow-x: hidden;
-        }
-
-        /* --- HEADER --- */
-        .banner-rasgado {
-            width: 100%;
-            min-height: 280px;
-            background-image: url('papel-rasgado.png'); 
-            background-size: 100% 100%;
+            background-attachment: fixed;
             background-repeat: no-repeat;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 80px;
-            box-sizing: border-box;
-            position: relative;
-            margin-bottom: 40px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
-        }
-
-        .firma {
-            font-family: 'Homemade Apple', cursive;
-            font-size: 3rem;
-            color: #b91d1d;
+            font-family: 'Montserrat', sans-serif;
             margin: 0;
+            padding: 40px;
+            color: #2c2c2c;
+            min-height: 100vh;
         }
 
-        .cita-header {
-            font-style: italic;
-            color: #444;
-            margin-top: 15px;
-            font-size: 1.3rem;
-            max-width: 600px;
-        }
-
-        /* --- FOTO CON TAPE --- */
-        .foto-pegada-container {
-            position: relative;
-            display: inline-block;
-            transform: rotate(5deg);
-            z-index: 5;
-        }
-
-        .arjona-banner {
-            height: 180px;
-            border: 6px solid white;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .foto-pegada-container::before {
-            content: "";
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-8deg);
-            width: 80px;
-            height: 25px;
-            background-color: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(2px);
-            z-index: 10;
-        }
-
-        /* --- CONTENIDO CON EFECTO DIFUMINADO (GLASSMORPHISM) --- */
-        .contenido-inferior {
-            padding: 0 40px 40px 40px;
-        }
-
-        .main-grid {
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .dashboard {
             display: grid;
-            grid-template-columns: 1.2fr 1fr 1.2fr;
-            gap: 30px;
+            grid-template-columns: 350px 1fr 300px;
+            grid-template-rows: auto 1fr;
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .col-titulos { 
-            font-size: 1.3rem; 
-            color: #b91d1d; 
-            margin-bottom: 20px; 
-            display: block; 
-            text-shadow: 1px 1px 0px white;
-        }
-
-        /* Estilo de los cuadros transparentes difuminados */
-        .glass-box {
-            background: rgba(255, 255, 255, 0.25); /* Transparente */
-            backdrop-filter: blur(10px); /* DIFUMINADO */
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
+        /* --- CUADRO DE PERFIL (DONDE VA LA FIRMA Y FOTO) --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            padding: 20px;
-        }
-
-        .card-popular {
-            width: 100%;
-            min-height: 352px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-        }
-
-        .view-more {
-            margin: 25px auto 0 auto;
-            display: table;
-            padding: 12px 40px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 2px solid #b91d1d;
-            border-radius: 50px;
-            text-decoration: none;
-            color: #b91d1d;
-            font-weight: bold;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: 0.3s;
         }
 
-        .view-more:hover {
-            background-color: #b91d1d;
+        .perfil-box {
+            grid-column: 1;
+            grid-row: 1 / 3;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .firma-moderna {
+            font-family: 'Homemade Apple', cursive;
+            color: #b91d1d;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .foto-perfil {
+            width: 220px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 5px solid white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: rotate(-2deg);
+            margin-bottom: 20px;
+        }
+
+        .cita-box {
+            font-family: 'Special Elite', serif;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #444;
+            padding: 15px;
+            border-top: 1px solid rgba(185, 29, 29, 0.2);
+        }
+
+        /* --- REPRODUCTOR CENTRAL --- */
+        .player-box {
+            grid-column: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .titulo-seccion {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #b91d1d;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* --- SECCIÓN DE "LO NUEVO / ARTISTAS" --- */
+        .features-grid {
+            grid-column: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 20px;
+        }
+
+        .icon-badge {
+            width: 50px;
+            height: 50px;
+            background: #b91d1d;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
+            font-size: 1.2rem;
         }
 
-        .colab-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            margin-bottom: 15px; 
-            background: rgba(255, 255, 255, 0.3); 
-            padding: 10px; 
-            border-radius: 50px; 
+        /* --- COLUMNA DE DATOS (DERECHA) --- */
+        .stats-box {
+            grid-column: 3;
+            grid-row: 1 / 3;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .colab-img { width: 45px; height: 45px; background: rgba(255,255,255,0.5); border-radius: 50%; }
-
-        .info-box { 
-            margin-bottom: 15px; 
-            border-left: 8px solid #b91d1d; 
+        .stat-card {
+            text-align: left;
         }
 
-        .num { font-size: 1.5rem; font-weight: bold; color: #b91d1d; margin-right: 15px; }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #b91d1d;
+            display: block;
+        }
 
-        .lyrics-text { font-size: 0.85rem; color: #444; line-height: 1.4; }
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #777;
+        }
 
+        .lyrics-preview {
+            font-family: 'Special Elite', serif;
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.8;
+            background: rgba(0,0,0,0.03);
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 15px;
+            background: #b91d1d;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: auto;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(185, 29, 29, 0.3);
+        }
     </style>
 </head>
 <body>
 
-    <div class="banner-rasgado">
-        <div class="firma-container">
-            <h1 class="firma">Ricardo Arjona</h1>
-            <p class="cita-header">"Si el pasado te enseña, bienvenido sea..."</p>
+    <div class="dashboard">
+        
+        <div class="glass-card perfil-box">
+            <h1 class="firma-moderna">Ricardo Arjona</h1>
+            <img src="arjona-intro.png" class="foto-perfil" alt="Arjona">
+            <div class="cita-box">
+                "Si el pasado te enseña, bienvenido sea..."
+            </div>
         </div>
 
-        <div class="foto-pegada-container">
-            <img src="arjona-intro.png" class="arjona-banner" alt="Arjona">
+        <div class="player-box">
+            <span class="titulo-seccion">Now Playing</span>
+            <div class="glass-card" style="padding: 10px;">
+                <iframe style="border-radius:20px" src="http://googleusercontent.com/spotify.com/7" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
         </div>
-    </div>
 
-    <div class="contenido-inferior">
-        <div class="main-grid">
+        <div class="glass-card stats-box">
+            <span class="titulo-seccion">Track Insights</span>
             
-            <div>
-                <span class="col-titulos">Canción Top ></span>
-                <div class="glass-box card-popular">
-                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7J6IYudWsxHy3stN5aMKSN?utm_source=generator0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                </div>
-                <a href="discografia.html" target="contenido" class="view-more">View More</a>
+            <div class="stat-card">
+                <span class="stat-value">590.4M</span>
+                <span class="stat-label">Streams en Spotify</span>
             </div>
 
-            <div>
-                <span class="col-titulos">Colaboraciones</span>
-                <div class="glass-box">
-                    <div class="colab-item"><div class="colab-img"></div> <span>Gaby Moreno</span></div>
-                    <div class="colab-item"><div class="colab-img"></div> <span>Marc Anthony</span></div>
-                    <div class="colab-item"><div class="colab-img"></div> <span>Fito Páez</span></div>
-                </div>
+            <div class="stat-card">
+                <span class="stat-value">2011</span>
+                <span class="stat-label">Año de Lanzamiento</span>
             </div>
 
-            <div>
-                <div class="glass-box info-box">
-                    <span class="num">01</span> <strong>Fuiste Tú</strong>
-                    <p style="font-size: 0.85rem; margin-top: 8px;">
-                        Álbum: Independiente (2011)<br>
-                        Duración: 4:32 min<br>
-                        Spotify: 590,405,375 repros
-                    </p>
-                </div>
-                <div class="glass-box info-box">
-                    <span class="num">02</span> <strong>The Singer</strong>
-                    <p style="font-size: 0.85rem;">Ricardo Arjona & Gaby Moreno</p>
-                </div>
-                <div class="glass-box info-box">
-                    <span class="num">03</span> <strong>La Letra</strong>
-                    <p class="lyrics-text">"Fuiste tú, tenerte fue una foto tuya puesta en mi cartera..."</p>
-                </div>
+            <span class="titulo-seccion">Extracto de Letra</span>
+            <div class="lyrics-preview">
+                "Fuiste tú, tenerte fue una foto tuya puesta en mi cartera, un beso y una flor un día de primavera..."
             </div>
 
+            <button class="btn-action" onclick="location.href='discografia.html'">EXPLORAR DISCOGRAFÍA</button>
         </div>
+
+        <div class="features-grid">
+            <div class="glass-card feature-item">
+                <div class="icon-badge">♫</div>
+                <div>
+                    <strong>Gaby Moreno</strong>
+                    <p style="margin:0; font-size: 0.7rem; color: #777;">Co-Intérprete Principal</p>
+                </div>
+            </div>
+            <div class="glass-card feature-item">
+                <div class="icon-badge">★</div>
+                <div>
+                    <strong>Independiente</strong>
+                    <p style="margin:0; font-size: 0.7rem; color: #777;">Álbum Ganador</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </body>
