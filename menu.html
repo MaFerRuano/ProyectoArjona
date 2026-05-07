@@ -5,83 +5,84 @@
     <style>
         body {
             background-color: #f4f1ea; 
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Helvetica', sans-serif;
             padding: 20px;
+            margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            margin: 0;
             box-sizing: border-box;
-            overflow-x: hidden;
         }
-        h2 { color: #333; border-bottom: 2px solid #333; margin-top: 0; }
-        ul { list-style-type: none; padding: 0; flex-grow: 1; }
-        li { margin: 15px 0; }
-        a { 
-            text-decoration: none; 
-            color: #555; 
-            font-weight: bold; 
-            display: block;
-        }
+
+        h2 { color: #333; border-bottom: 2px solid #333; font-family: 'Courier New', monospace; }
+        
+        ul { list-style-type: none; padding: 0; margin-bottom: 30px; }
+        li { margin: 12px 0; }
+        a { text-decoration: none; color: #555; font-weight: bold; font-family: 'Courier New', monospace; }
         a:hover { color: #b91d1d; }
 
-        /* --- CONTENEDOR DEL VINILO Y SPOTIFY --- */
-        .reproductor-musical {
-            margin-top: auto; /* Empuja todo hacia abajo */
-            padding-bottom: 20px;
-            text-align: center;
-        }
-
-        /* El Disco de Vinilo */
-        .vinilo-container {
+        /* --- CONTENEDOR ESTILO PLAYLIST --- */
+        .playlist-card {
+            background-color: #ffffff;
+            border-radius: 30px;
+            padding: 20px;
             position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto -40px auto; /* Lo encima un poco sobre Spotify */
-            z-index: 2;
-        }
-
-        .disco-negro {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, #000 0%, #111 20%, #000 40%, #111 60%, #000 80%, #111 100%);
-            border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-top: auto;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            animation: girar 8s linear infinite; /* Animación de giro */
         }
 
-        /* La foto del centro (tu imagen) */
-        .etiqueta-foto {
-            width: 45px;
-            height: 45px;
+        /* El Disco Vinilo Gigante cortado a la izquierda */
+        .disco-decorativo {
+            position: absolute;
+            left: -80px; /* Se sale un poco como en tu imagen */
+            top: 20%;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, #222 0%, #000 40%, #111 50%, #000 70%, #222 100%);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.9;
+            animation: girar 10s linear infinite;
+        }
+
+        .disco-decorativo::after {
+            content: "";
+            position: absolute;
+            top: 35%;
+            left: 35%;
+            width: 30%;
+            height: 30%;
+            background-image: url('arjona-intro.png'); /* Tu imagen en el centro */
+            background-size: cover;
             border-radius: 50%;
             border: 2px solid #fff;
-            overflow: hidden;
         }
 
-        .etiqueta-foto img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Agujero pequeño del centro */
-        .agujero {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background-color: #f4f1ea;
-            border-radius: 50%;
-            z-index: 10;
-        }
-
-        .spotify-container {
-            width: 100%;
+        /* Contenedor del reproductor real */
+        .spotify-wrapper {
             position: relative;
             z-index: 1;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .info-header {
+            text-align: right;
+            width: 100%;
+            margin-bottom: 10px;
+            z-index: 1;
+        }
+
+        .info-header span {
+            font-size: 0.7rem;
+            color: #aaa;
+            display: block;
         }
 
         @keyframes girar {
@@ -93,27 +94,22 @@
 <body>
     <h2>Arjona</h2>
     <ul>
-        <li><a href="introduccion.html" target="contenido">1. Introducción</a></li>
-        <li><a href="biografia.html" target="contenido">2. Biografía</a></li>
-        <li><a href="discografia.html" target="contenido">3. Discografía</a></li>
-        <li><a href="poetica.html" target="contenido">4. Estilo Poético</a></li>
-        <li><a href="galeria.html" target="contenido">5. Galería</a></li>
-        <li><a href="acerca_de.html" target="contenido">6. Acerca de</a></li>
+        <li><a href="introduccion.html" target="contenido">Home</a></li>
+        <li><a href="biografia.html" target="contenido">Biografía</a></li>
+        <li><a href="discografia.html" target="contenido">Playlist</a></li>
+        <li><a href="acerca_de.html" target="contenido">Equipo</a></li>
     </ul>
 
-    <div class="reproductor-musical">
-        <div class="vinilo-container">
-            <div class="disco-negro">
-                <div class="etiqueta-foto">
-                    <img src="arjona-intro.png" alt="Etiqueta">
-                </div>
-                <div class="agujero"></div>
-            </div>
+    <div class="playlist-card">
+        <div class="info-header">
+            <span>@mafer_arjona</span>
+            <strong>23k seguidores</strong>
         </div>
 
-        <div class="spotify-container">
-            <p style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">Sintonizando bohemia:</p>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7J6IYudWsxHy3stN5aMKSN?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <div class="disco-decorativo"></div>
+
+        <div class="spotify-wrapper">
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3clS9vS_N2u9MuvW9vNCOK?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </div>
     </div>
 </body>
