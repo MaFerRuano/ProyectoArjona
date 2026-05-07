@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         body {
-            background-color: #f4f1ea; /* Color tipo papel viejo */
+            background-color: #f4f1ea; 
             font-family: 'Courier New', Courier, monospace;
             padding: 20px;
             display: flex;
@@ -12,6 +12,7 @@
             height: 100vh;
             margin: 0;
             box-sizing: border-box;
+            overflow-x: hidden;
         }
         h2 { color: #333; border-bottom: 2px solid #333; margin-top: 0; }
         ul { list-style-type: none; padding: 0; flex-grow: 1; }
@@ -22,21 +23,67 @@
             font-weight: bold; 
             display: block;
         }
-        a:hover { color: #b91d1d; } /* Rojo Arjona */
-        
-        .spotify-container {
-            margin-top: 20px;
-            width: 100%;
+        a:hover { color: #b91d1d; }
+
+        /* --- CONTENEDOR DEL VINILO Y SPOTIFY --- */
+        .reproductor-musical {
+            margin-top: auto; /* Empuja todo hacia abajo */
+            padding-bottom: 20px;
+            text-align: center;
         }
 
-        /* Estilo para el vinilo que podrías agregar después */
-        .vinilo {
-            width: 60px;
-            display: block;
-            margin: 10px auto;
-            animation: girar 5s linear infinite;
-            border-radius: 50%;
+        /* El Disco de Vinilo */
+        .vinilo-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto -40px auto; /* Lo encima un poco sobre Spotify */
+            z-index: 2;
         }
+
+        .disco-negro {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #000 0%, #111 20%, #000 40%, #111 60%, #000 80%, #111 100%);
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: girar 8s linear infinite; /* Animación de giro */
+        }
+
+        /* La foto del centro (tu imagen) */
+        .etiqueta-foto {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            overflow: hidden;
+        }
+
+        .etiqueta-foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Agujero pequeño del centro */
+        .agujero {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #f4f1ea;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .spotify-container {
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
         @keyframes girar {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -54,11 +101,20 @@
         <li><a href="acerca_de.html" target="contenido">6. Acerca de</a></li>
     </ul>
 
-    <hr>
-    
-    <div class="spotify-container">
-        <p style="font-size: 0.8rem; margin-bottom: 5px;">Escuchando ahora:</p>
-        <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/7J6IYudWsxHy3stN5aMKSN?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    <div class="reproductor-musical">
+        <div class="vinilo-container">
+            <div class="disco-negro">
+                <div class="etiqueta-foto">
+                    <img src="arjona-intro.png" alt="Etiqueta">
+                </div>
+                <div class="agujero"></div>
+            </div>
+        </div>
+
+        <div class="spotify-container">
+            <p style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">Sintonizando bohemia:</p>
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7J6IYudWsxHy3stN5aMKSN?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
     </div>
 </body>
 </html>
