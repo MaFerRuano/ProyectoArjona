@@ -15,7 +15,7 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            border-left: 5px solid #b91d1d; /* El rojo Arjona  */
+            border-left: 5px solid #b91d1d; /* El rojo Arjona */
             padding-left: 30px;
         }
         h1 {
@@ -36,6 +36,7 @@
         }
         .cita {
             margin-top: 50px;
+            margin-bottom: 30px;
             font-size: 1.5rem;
             color: #b91d1d;
             font-weight: bold;
@@ -50,7 +51,11 @@
             justify-content: center;
             margin-bottom: 20px;
             border: 1px solid #ccc;
-            /* Poner una foto de Arjona después */
+        }
+        .spotify-container {
+            margin-top: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
         }
     </style>
 </head>
@@ -58,7 +63,6 @@
 
 <div class="container">
     <div class="imagen-intro">
-        <!-- Reemplazar este texto por una imagen real de Arjona -->
         <p style="color: #999;">[Espacio para imagen de Arjona en el estudio]</p>
     </div>
 
@@ -80,6 +84,10 @@
 
     <div class="cita">
         "Si el pasado te enseña, bienvenido sea..."
+    </div>
+
+    <div class="spotify-container">
+        <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/7J6IYudWsxHy3stN5aMKSN?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
 </div>
 
