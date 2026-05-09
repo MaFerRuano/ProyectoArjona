@@ -2,23 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción - Ricardo Arjona</title>
+    <!-- Llamada al archivo de estilos profesional -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Fuentes necesarias -->
+    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Special+Elite&family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Special+Elite&family=Montserrat:wght@300;700&display=swap');
-
-        body {
-            background-image: url('paper-background.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 100px 40px 40px 40px; 
-            color: #2c2c2c;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-
+        /* Ajuste específico para el layout de esta página que usa Grid */
         .dashboard {
             display: grid;
             grid-template-columns: 320px 1fr 320px;
@@ -27,50 +19,11 @@
             margin: 0 auto;
         }
 
-        /* Mantenemos el estilo glass para lo demás, pero más sutil */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.08); 
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 25px;
-            padding: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .firma-moderna {
-            font-family: 'Homemade Apple', cursive;
-            color: #b91d1d;
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .foto-perfil {
-            width: 100%;
-            max-width: 200px;
-            display: block;
-            margin: 0 auto 20px auto;
-            border-radius: 15px;
-            border: 4px solid white;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-            transform: rotate(-1deg);
-        }
-
-        .titulo-seccion {
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #b91d1d;
-            font-size: 0.75rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        /* CONTENEDOR DE SPOTIFY SIN CUADRO BLANCO */
+        /* Estilo para el reproductor que decidimos dejar fuera de las cajas */
         .spotify-libre {
             width: 100%;
             filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+            margin-bottom: 20px;
         }
 
         .stats-grid {
@@ -86,76 +39,79 @@
             background: rgba(255,255,255,0.15);
             border-radius: 15px;
         }
-
-        .stat-small strong { color: #b91d1d; font-size: 1.2rem; display: block; }
-
-        .curiosidad-box {
-            font-family: 'Special Elite', serif;
-            font-size: 0.8rem;
-            line-height: 1.6;
-            color: #444;
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 15px;
-            border-left: 4px solid #b91d1d;
-            margin-top: 20px;
-        }
-
-        .btn-action {
+        
+        .foto-perfil-intro {
             width: 100%;
-            padding: 12px;
-            background: #b91d1d;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 20px;
+            max-width: 200px;
+            display: block;
+            margin: 0 auto 20px auto;
+            border-radius: 15px;
+            border: 4px solid white;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transform: rotate(-1deg);
         }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        
-        <!-- IZQUIERDA -->
-        <div class="glass-card">
-            <h1 class="firma-moderna">Ricardo Arjona</h1>
-            <img src="arjona-intro.png" class="foto-perfil" alt="Arjona">
-            <div class="stats-grid">
-                <div class="stat-small"><strong>+80M</strong><span>Ventas</span></div>
-                <div class="stat-small"><strong>15</strong><span>Álbumes</span></div>
-            </div>
-        </div>
-
-        <!-- CENTRO: SPOTIFY LIBRE -->
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            <span class="titulo-seccion" style="text-align: center;">Escuchar Ahora</span>
+    <div class="container">
+        <div class="dashboard">
             
-            <div class="spotify-libre">
-                <!-- El reproductor ahora respira fuera de cualquier caja -->
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3clS9vS_N2u9MuvW9vNCOK?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <!-- COLUMNA IZQUIERDA: PERFIL -->
+            <div class="glass-card">
+                <h1 class="firma-moderna" style="font-family: 'Homemade Apple', cursive; text-align: center; font-size: 1.6rem; margin-bottom: 20px;">
+                    Ricardo Arjona
+                </h1>
+                <img src="arjona-intro.png" class="foto-perfil-intro" alt="Ricardo Arjona">
+                
+                <div class="stats-grid">
+                    <div class="stat-small">
+                        <strong style="color: #b91d1d; font-size: 1.2rem; display: block;">+80M</strong>
+                        <span style="font-size: 0.7rem; text-transform: uppercase;">Ventas</span>
+                    </div>
+                    <div class="stat-small">
+                        <strong style="color: #b91d1d; font-size: 1.2rem; display: block;">15</strong>
+                        <span style="font-size: 0.7rem; text-transform: uppercase;">Álbumes</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="glass-card" style="font-family: 'Special Elite', serif; font-style: italic; text-align: center;">
-                "Si el pasado te enseña, bienvenido sea..."
+            <!-- COLUMNA CENTRAL: SPOTIFY Y CITA -->
+            <div style="display: flex; flex-direction: column;">
+                <span class="subtitulo-rojo" style="text-align: center;">Escuchar Ahora</span>
+                
+                <div class="spotify-libre">
+                    <iframe style="border-radius:12px" 
+                            src="https://open.spotify.com/embed/track/3clS9vS_N2u9MuvW9vNCOK?utm_source=generator" 
+                            width="100%" height="352" frameBorder="0" allowfullscreen="" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                            loading="lazy">
+                    </iframe>
+                </div>
+
+                <div class="glass-card" style="font-family: 'Special Elite', serif; font-style: italic; text-align: center; border-left: none; border-bottom: 4px solid #b91d1d;">
+                    "Si el pasado te enseña, bienvenido sea..."
+                </div>
             </div>
+
+            <!-- COLUMNA DERECHA: BIO BREVE -->
+            <div class="glass-card">
+                <span class="subtitulo-rojo">Biografía Breve</span>
+                
+                <p style="font-size: 0.9rem; margin-bottom: 20px;">
+                    Nacido en Jocotenango, Guatemala. Su lírica ha marcado a generaciones en toda Latinoamérica.
+                </p>
+                
+                <p style="font-size: 0.9rem; border-left: 3px solid #555; padding-left: 10px; font-style: italic;">
+                    Ex-seleccionado nacional de baloncesto, un artista que rompe moldes.
+                </p>
+
+                <a href="biografia.html" class="btn-arjona" style="margin-top: 30px; display: block;">
+                    Leer más
+                </a>
+            </div>
+
         </div>
-
-        <!-- DERECHA -->
-        <div class="glass-card">
-            <span class="titulo-seccion">Biografía Breve</span>
-            <div class="curiosidad-box">
-                Nacido en Jocotenango, Guatemala. Su lírica ha marcado a generaciones en toda Latinoamérica.
-            </div>
-            <div class="curiosidad-box" style="border-left-color: #555;">
-                Ex-seleccionado nacional de baloncesto, un artista que rompe moldes.
-            </div>
-            <button class="btn-action" onclick="location.href='biografia.html'">LEER MÁS</button>
-        </div>
-
     </div>
 
 </body>
