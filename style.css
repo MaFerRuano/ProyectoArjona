@@ -1,83 +1,124 @@
-/* Configuración General */
+/* =========================================
+   VARIABLES GLOBALES (Paleta Arjona)
+   ========================================= */
+:root {
+    --rojo-arjona: #b91d1d;
+    --gris-oscuro: #2c2c2c;
+    --gris-claro: #3d3d3d;
+    --texto-blanco: #f4f4f4;
+    --texto-negro: #1a1a1a;
+    /* Efecto Cristal: Blanco translúcido con desenfoque */
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+/* =========================================
+   CONFIGURACIÓN BASE
+   ========================================= */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('paper-background.jpg'); /* Tu imagen de papel */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #2c2c2c; /* Gris Oscuro solicitado */
-    color: #f4f4f4; /* Texto casi blanco para legibilidad */
+    color: var(--texto-negro);
+    min-height: 100vh;
 }
 
-/* Cabecera */
-header {
-    background-color: #1a1a1a; /* Un tono más oscuro para contraste */
-    color: #ffffff;
-    padding: 80px 20px;
-    text-align: center;
-    border-bottom: 5px solid #b91d1d; /* Línea Roja de acento */
+/* =========================================
+   COMPONENTES DE DISEÑO (Tarjetas Glass)
+   ========================================= */
+
+/* Cuadro principal difuminado */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    /* Franja roja característica de tu bio-section original */
+    border-left: 8px solid var(--rojo-arjona); 
+    transition: transform 0.3s ease;
 }
 
-header h1 {
-    font-size: 3.5rem;
+.glass-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Títulos con el Rojo Arjona solicitado */
+h1, h2, h3 {
+    color: var(--rojo-arjona);
+    text-transform: uppercase;
     letter-spacing: 2px;
-    margin: 0;
-    text-transform: uppercase;
+    margin-top: 0;
 }
 
-header p {
-    color: #b91d1d; /* Subtítulo en Rojo */
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-/* Contenedor principal */
-.container {
-    max-width: 900px;
-    margin: 50px auto;
-    padding: 0 20px;
-}
-
-/* Sección de biografía */
-.bio-section {
-    background-color: #3d3d3d; /* Gris un poco más claro para separar del fondo */
-    padding: 40px;
-    border-radius: 4px;
-    border-left: 10px solid #b91d1d; /* Franja Roja lateral */
-    box-shadow: 10px 10px 0px rgba(0,0,0,0.2);
-}
-
-h2, h3 {
-    color: #b91d1d; /* Títulos en Rojo solicitado */
-    text-transform: uppercase;
-}
-
-/* Lista de álbumes */
-.albums ul {
+/* =========================================
+   LISTAS Y ÁLBUMES (Rediseñados)
+   ========================================= */
+.item-lista {
+    background: rgba(0, 0, 0, 0.04);
     list-style: none;
-    padding: 0;
+    margin: 12px 0;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--texto-negro);
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.albums li {
-    background: #242424;
-    margin: 10px 0;
-    padding: 15px;
-    border: 1px solid #444;
-    transition: all 0.3s ease;
+/* Efecto hover basado en tu código anterior */
+.item-lista:hover {
+    background: var(--rojo-arjona);
+    color: #ffffff;
+    transform: scale(1.03) translateX(10px);
+    box-shadow: 0 10px 20px rgba(185, 29, 29, 0.2);
+    cursor: pointer;
 }
 
-/* Efecto al pasar el mouse */
-.albums li:hover {
-    background: #b91d1d; /* Fondo Rojo al pasar el mouse */
-    color: #fff;
-    transform: scale(1.02);
-    cursor: default;
-}
-
-/* Pie de página */
-footer {
+/* =========================================
+   BOTONES Y ACCIONES
+   ========================================= */
+.btn-arjona {
+    display: inline-block;
+    padding: 12px 35px;
+    background-color: var(--rojo-arjona);
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-radius: 50px;
+    border: none;
+    transition: 0.3s;
     text-align: center;
-    padding: 40px;
-    font-size: 0.8rem;
-    color: #888;
-    background-color: #1a1a1a;
+}
+
+.btn-arjona:hover {
+    background-color: var(--gris-oscuro);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* =========================================
+   UTILIDADES
+   ========================================= */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.subtitulo-rojo {
+    color: var(--rojo-arjona);
+    font-weight: bold;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 10px;
 }
