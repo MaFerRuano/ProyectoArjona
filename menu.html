@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Menú | Ricardo Arjona Project</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -11,34 +12,41 @@
         }
 
         body {
-            /* Manteniendo tu codigo CSS original intacto */
             background-color: #1a1a1a !important; 
             display: flex;
-            justify-content: space-between; /* Ajustado para que el botón de salir quede a la derecha */
+            /* Distribuye: Título Izquierda, Menú Centro, Perfil Derecha */
+            justify-content: space-between; 
             align-items: center;
             padding: 0 40px;
-            height: 100px; /* Ajustado al tamaño de la fila en el index */
+            height: 100px; 
             overflow: hidden;
-            /* Misma fuente que las otras paginas */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Linea roja inferior para conectar con el diseño de las paginas */
             border-bottom: 5px solid #b91d1d; 
+        }
+
+        .logo {
+            color: #b91d1d; 
+            font-weight: bold; 
+            font-size: 1.2rem; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            width: 150px; /* Ancho fijo para equilibrar el espacio con el perfil */
         }
 
         ul {
             list-style: none;
             display: flex;
-            gap: 30px;
+            gap: 20px;
         }
 
         a {
             text-decoration: none;
-            color: #ffffff; /* Texto blanco sobre fondo oscuro */
+            color: #ffffff; 
             font-weight: bold;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 4px;
             transition: all 0.3s ease;
             border: 1px solid transparent;
@@ -51,34 +59,88 @@
             transform: scale(1.05);
         }
 
-        /* Clase activa: resalta en que pagina se esta */
+        /* Clase activa corregida para mantener el color en la página actual */
         a.active {
             background-color: #b91d1d !important;
             color: #ffffff !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* Estilo para tu nuevo botón de cerrar sesión acorde al diseño */
-        .btn-logout {
-            background-color: #b91d1d;
-            color: #ffffff;
-            border: none;
-            padding: 10px 18px;
-            font-weight: bold;
-            font-size: 0.85rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
+        /* CONTENEDOR DEL MENÚ DE USUARIO DESPLEGABLE (DROPDOWN) */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 150px; /* Equilibra simétricamente el diseño con el logo */
+            text-align: right;
         }
 
-        .btn-logout:hover {
+        /* El círculo del icono */
+        .avatar-btn {
             background-color: #ffffff;
             color: #1a1a1a;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+            border: none;
+        }
+
+        .avatar-btn:hover {
+            background-color: #b91d1d;
+            color: #ffffff;
+        }
+
+        /* La cajita flotante con las opciones */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 45px;
+            background-color: #3d3d3d;
+            min-width: 140px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
+            border-radius: 4px;
+            border-top: 3px solid #b91d1d;
+            z-index: 1000;
+        }
+
+        /* El botón de cerrar sesión dentro del menú desplegable */
+        .dropdown-content button {
+            color: #ffffff;
+            background: none;
+            border: none;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-content button:hover {
+            background-color: #b91d1d;
+        }
+
+        /* Clase para mostrar el menú con JavaScript */
+        .show {
+            display: block;
         }
     </style>
 </head>
 <body>
+
+    <div class="logo">ARJONA</div>
 
     <ul id="menuList">
         <li><a href="introduccion.html" target="contenido" onclick="setActive(this)" class="active">Home</a></li>
@@ -89,24 +151,53 @@
         <li><a href="equipo.html" target="contenido" onclick="setActive(this)">Equipo</a></li>
     </ul>
 
-    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    <div class="user-dropdown">
+        <button class="avatar-btn" onclick="toggleDropdown()">👤</button>
+        <div id="myDropdown" class="dropdown-content">
+            <button onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
 
     <script>
         const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // FUNCIÓN ACTIVA CORREGIDA: Cambia la selección visual al hacer clic sin importar los frames
         function setActive(element) {
-            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+            // Busca todos los enlaces en este documento y les quita la clase active
+            document.querySelectorAll('#menuList a').forEach(link => {
+                link.classList.remove('active');
+            });
+            // Se la agrega únicamente al elemento al que le diste clic
             element.classList.add('active');
         }
 
+        // Abrir y cerrar el menú desplegable del usuario
+        function toggleDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        // Cerrar el menú si el usuario hace clic afuera de él
+        window.onclick = function(event) {
+            if (!event.target.matches('.avatar-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // Función de salida corregida a nivel raíz (window.top)
         async function logout() {
             await supabase.auth.signOut();
-            /* CAMBIO CLAVE: Redirige la ventana padre (completa) directo a index.html.
-               Esto limpia los marcos y fuerza a mostrar la pantalla de login sin errores grises.
+            /* Usar window.top asegura romper la estructura de marcos por completo,
+               redirigiendo la pantalla completa del navegador de vuelta a index.html
             */
-            window.parent.location.href = 'index.html'; 
+            window.top.location.href = 'index.html'; 
         }
     </script>
 </body>
