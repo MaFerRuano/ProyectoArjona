@@ -46,7 +46,10 @@
 
         .gallery-item img {
             width: 100%;
-            height: auto;
+            /* NOTA MAFER: Le puse una altura fija de 250px a todas las fotos para que la cuadrícula se vea pareja */
+            height: 250px; 
+            /* NOTA MAFER: Usar object-fit cover es clave para que las fotos no se apachen ni se estiren, solo se recorta el sobrante */
+            object-fit: cover; 
             border-radius: 2px;
             border: 1px solid #444;
         }
