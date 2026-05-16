@@ -4,26 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ricardo Arjona - Proyecto Oficial</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* Estilos para la pantalla de Login que cubre todo al inicio */
         html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
-            background-color: #f4f1ea;
+            height: 100vh;
+            background-color: #2c2c2c;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f4f4f4;
+        }
+
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 99999;
+            background-color: #2c2c2c;
+        }
+
+        .login-box {
+            background-color: #3d3d3d;
+            padding: 50px 40px;
+            border-radius: 4px;
+            border-top: 10px solid #b91d1d;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.2);
+            max-width: 450px;
+            width: 100%;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 10px 0;
+        }
+
+        p {
+            color: #b91d1d;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            margin: 0 0 35px 0;
+        }
+
+        .btn-google {
+            background-color: #ffffff;
+            color: #1a1a1a;
+            border: none;
+            padding: 14px 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-google:hover {
+            background-color: #b91d1d;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(185, 29, 29, 0.3);
         }
     </style>
 </head>
 
-<frameset rows="120, *" border="0" frameborder="0" framespacing="0">
-    
-    <frame src="menu.html" name="menu" noresize scrolling="no" allowtransparency="true">
-    
-    <frame src="introduccion.html" name="contenido">
+<div id="loginScreen">
+    <div class="login-box">
+        <h1>Bienvenido</h1>
+        <p>Al Mundo de Ricardo Arjona</p>
+        <button class="btn-google" onclick="login()">Iniciar Sesión con Google</button>
+    </div>
+</div>
 
+<frameset rows="120, *" border="0" frameborder="0" framespacing="0" id="mainProject" style="display: none;">
+    <frame src="menu.html" name="menu" noresize scrolling="no">
+    <frame src="introduccion.html" name="contenido">
     <noframes>
-        <body>
-            <p>Tu navegador no soporta frames. Por favor, actualízalo para ver este sitio dedicado a Ricardo Arjona.</p>
-        </body>
+        <body><p>Tu navegador no soporta marcos.</p></body>
     </noframes>
 </frameset>
+
+<script>
+    // Inicialización de Supabase con tus credenciales
+    const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Evaluamos la sesión inmediatamente al cargar
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        evaluateAccess(session);
+    });
+
+    // Escuchamos cambios de estado de sesión
+    supabase.auth.onAuthStateChange((event, session) => {
+        evaluateAccess(session);
+    });
+
+    function evaluateAccess(session) {
+        const loginScreen = document.getElementById('loginScreen');
+        const mainProject = document.getElementById('mainProject');
+
+        if (session) {
+            // Si está logueado: ocultamos el login y mostramos los marcos originales
+            if (loginScreen) loginScreen.style.setProperty('display', 'none', 'important');
+            if (mainProject) mainProject.style.display = 'block';
+        } else {
+            // Si no está logueado: mostramos el login y nos aseguramos de que los marcos no se vean
+            if (mainProject) mainProject.style.display = 'none';
+            if (loginScreen) loginScreen.style.setProperty('display', 'flex', 'important');
+        }
+    }
+
+    async function login() {
+        await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: 'https://maferruano.github.io/Proyecto_ISDC/'
+            }
+        });
+    }
+</script>
 </html>
