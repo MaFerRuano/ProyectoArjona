@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricardo Arjona - Proyecto Oficial</title>
+    <title>Bienvenido | Ricardo Arjona Project</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         html, body {
@@ -13,20 +13,10 @@
             background-color: #2c2c2c;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #f4f4f4;
-        }
-
-        #loginScreen {
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            height: 100vh;
-            width: 100vw;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 99999;
-            background-color: #2c2c2c;
         }
 
         .login-box {
@@ -78,59 +68,34 @@
         }
     </style>
 </head>
+<body>
 
-<script>
-    const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <div class="login-box">
+        <h1>Bienvenido</h1>
+        <p>Al Mundo de Ricardo Arjona</p>
+        <button class="btn-google" onclick="login()">Iniciar Sesión con Google</button>
+    </div>
 
-    // Evaluamos la sesión inmediatamente al cargar la página
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        renderPage(session);
-    });
+    <script>
+        const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function renderPage(session) {
-        if (session) {
-            // SI ESTÁ LOGUEADO: Renderiza los marcos directamente de forma limpia
-            document.open();
-            document.write(`
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Ricardo Arjona - Proyecto Oficial</title>
-                </head>
-                <frameset rows="120, *" border="0" frameborder="0" framespacing="0">
-                    <frame src="menu.html" name="menu" noresize scrolling="no">
-                    <frame src="introduccion.html" name="contenido">
-                </frameset>
-                </html>
-            `);
-            document.close();
-        } else {
-            // SI NO ESTÁ LOGUEADO: Crea un body temporal con la interfaz de login limpia
-            document.open();
-            document.write(`
-                <div id="loginScreen">
-                    <div class="login-box">
-                        <h1>Bienvenido</h1>
-                        <p>Al Mundo de Ricardo Arjona</p>
-                        <button class="btn-google" onclick="window.login()">Iniciar Sesión con Google</button>
-                    </div>
-                </div>
-            `);
-            document.close();
-        }
-    }
-
-    // Dejamos la función global adjunta a window para asegurar que responda al clic sin fallas
-    window.login = async function() {
-        await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: 'https://maferruano.github.io/Proyecto_ISDC/'
+        // Si ya hay una sesión activa, mandamos al usuario directo al proyecto sin escalas
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                window.location.href = 'dashboard.html';
             }
         });
-    }
-</script>
+
+        async function login() {
+            await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: 'https://maferruano.github.io/Proyecto_ISDC/dashboard.html' // Redirige directo al dashboard al terminar
+                }
+            });
+        }
+    </script>
+</body>
 </html>
