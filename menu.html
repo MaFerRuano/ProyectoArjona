@@ -11,7 +11,7 @@
         }
 
         body {
-            /* Manteniendo el codigo CSS */
+            /* Manteniendo el codigo CSS intacto */
             background-color: #1a1a1a !important; 
             display: flex;
             justify-content: center;
@@ -22,7 +22,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             /* Linea roja inferior para conectar con el diseño de las paginas */
             border-bottom: 5px solid #b91d1d; 
-            position: relative; /* Agregado para poder fijar el icono a la derecha sin mover el centro */
+            
+            /* NOTA MAFER: Agregamos relative al body para poder ubicar el icono a la derecha sin mover el centro del menú */
+            position: relative; 
         }
 
         ul {
@@ -58,14 +60,12 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* === AJUSTES EXCLUSIVOS PARA EL DROPDOWN DE SESIÓN === */
+        /* --- NOTA MAFER: ESTILOS DEL DROPDOWN Y EL ICONO VECTORIAL --- */
         .user-menu-container {
             position: absolute;
-            right: 40px;
-            display: inline-block;
+            right: 40px; /* Lo pegamos a la derecha */
         }
 
-        /* Botón del icono SVG como vector rojo, sin fondo ni bordes */
         .vector-avatar-btn {
             background: none;
             border: none;
@@ -81,23 +81,28 @@
             transform: scale(1.1);
         }
 
-        /* Cambia el color del vector SVG al pasar el mouse */
+        /* Se pone blanco al pasar el mouse por encima */
         .vector-avatar-btn:hover svg path {
-            fill: #ffffff;
+            fill: #ffffff; 
         }
 
-        /* Cuadro flotante del menú de cerrar sesión */
+        /* La cajita gris que se despliega */
         .dropdown-box {
-            display: none;
+            display: none; /* Oculto por defecto */
             position: absolute;
             right: 0;
-            top: 45px;
+            top: 50px;
             background-color: #3d3d3d;
             min-width: 150px;
             box-shadow: 0px 8px 16px rgba(0,0,0,0.5);
             border-radius: 4px;
             border-top: 3px solid #b91d1d;
             z-index: 99999;
+        }
+
+        /* Clase especial para mostrar el menú con JavaScript */
+        .dropdown-box.show {
+            display: block;
         }
 
         .dropdown-box button {
@@ -123,7 +128,6 @@
     </style>
 </head>
 <body>
-
     <ul id="menuList">
         <li><a href="introduccion.html" target="contenido" onclick="setActive(this)" class="active">Home</a></li>
         <li><a href="biografia.html" target="contenido" onclick="setActive(this)">Biografía</a></li>
@@ -134,7 +138,7 @@
     </ul>
 
     <div class="user-menu-container">
-        <button class="vector-avatar-btn" id="avatarTrigger">
+        <button class="vector-avatar-btn" onclick="toggleMenu(event)">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="#b91d1d"/>
             </svg>
@@ -145,42 +149,39 @@
     </div>
 
     <script>
+        // Inicialización de Supabase
         const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // FUNCIÓN ACTIVA CORREGIDA (Limpia y marca la pestaña seleccionada inmediatamente)
+        // Tu función original, que remueve y agrega la clase al instante del clic
         function setActive(element) {
-            // Busca todos los enlaces dentro del menú y les quita la clase active de golpe
-            document.querySelectorAll('#menuList a').forEach(link => {
-                link.classList.remove('active');
-            });
-            // Le clava la clase active únicamente al botón al que le acabas de dar clic
+            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
         }
 
-        // LÓGICA DE DETECCIÓN DEL CLIC EN EL VECTOR DE USUARIO
-        const avatarBtn = document.getElementById('avatarTrigger');
-        const dropdownMenu = document.getElementById('dropdownMenu');
+        // NOTA MAFER: Función para abrir/cerrar el dropdown de forma segura
+        function toggleMenu(event) {
+            event.stopPropagation(); // Impide que el clic se bloquee
+            document.getElementById("dropdownMenu").classList.toggle("show");
+        }
 
-        avatarBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que los marcos interfieran o bloqueen el clic
-            if (dropdownMenu.style.display === 'block') {
-                dropdownMenu.style.display = 'none';
-            } else {
-                dropdownMenu.style.display = 'block';
+        // NOTA MAFER: Cerrar el dropdown si se hace clic en cualquier otro lado de la barra negra
+        window.onclick = function(event) {
+            // Verifica si el clic NO fue en el icono
+            if (!event.target.closest('.vector-avatar-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-box");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) {
+                        dropdowns[i].classList.remove('show');
+                    }
+                }
             }
-        });
+        }
 
-        // Oculta el recuadro gris flotante si hacen clic en cualquier zona vacía del menú
-        document.addEventListener('click', () => {
-            dropdownMenu.style.display = 'none';
-        });
-
-        // FUNCIÓN DE SALIDA A NIVEL RAÍZ
+        // Función de salida
         async function logout() {
             await supabase.auth.signOut();
-            // Rompe los marcos por completo y regresa al login del index.html
             window.top.location.href = 'index.html'; 
         }
     </script>
