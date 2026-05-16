@@ -22,7 +22,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             /* Linea roja inferior para conectar con el diseño de las paginas */
             border-bottom: 5px solid #b91d1d; 
-            position: relative; /* Necesario para ubicar el perfil a la derecha sin mover el centro */
+            position: relative; /* Agregado para poder fijar el icono a la derecha sin mover el centro */
         }
 
         ul {
@@ -58,47 +58,53 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* CONTENEDOR DEL DROPDOWN DE USUARIO UBICADO A LA DERECHA */
-        .user-dropdown {
+        /* === AJUSTES EXCLUSIVOS PARA EL DROPDOWN DE SESIÓN === */
+        .user-menu-container {
             position: absolute;
             right: 40px;
             display: inline-block;
         }
 
-        /* Icono de usuario como vector de texto color rojo arjona y sin fondos */
-        .avatar-btn {
+        /* Botón del icono SVG como vector rojo, sin fondo ni bordes */
+        .vector-avatar-btn {
             background: none;
-            color: #b91d1d;
             border: none;
-            font-size: 1.5rem;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 5px;
+            transition: transform 0.2s ease;
         }
 
-        .avatar-btn:hover {
+        .vector-avatar-btn:hover {
             transform: scale(1.1);
         }
 
-        /* Cajita flotante del menú de cerrar sesión */
-        .dropdown-content {
+        /* Cambia el color del vector SVG al pasar el mouse */
+        .vector-avatar-btn:hover svg path {
+            fill: #ffffff;
+        }
+
+        /* Cuadro flotante del menú de cerrar sesión */
+        .dropdown-box {
             display: none;
             position: absolute;
             right: 0;
-            top: 40px;
+            top: 45px;
             background-color: #3d3d3d;
-            min-width: 140px;
+            min-width: 150px;
             box-shadow: 0px 8px 16px rgba(0,0,0,0.5);
             border-radius: 4px;
             border-top: 3px solid #b91d1d;
             z-index: 99999;
         }
 
-        .dropdown-content button {
+        .dropdown-box button {
             color: #ffffff;
             background: none;
             border: none;
-            padding: 12px 16px;
+            padding: 14px 16px;
             text-decoration: none;
             display: block;
             width: 100%;
@@ -111,7 +117,7 @@
             transition: background-color 0.2s;
         }
 
-        .dropdown-content button:hover {
+        .dropdown-box button:hover {
             background-color: #b91d1d;
         }
     </style>
@@ -127,9 +133,13 @@
         <li><a href="equipo.html" target="contenido" onclick="setActive(this)">Equipo</a></li>
     </ul>
 
-    <div class="user-dropdown">
-        <button class="avatar-btn" id="avatarClick">👤</button>
-        <div id="myDropdown" class="dropdown-content">
+    <div class="user-menu-container">
+        <button class="vector-avatar-btn" id="avatarTrigger">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="#b91d1d"/>
+            </svg>
+        </button>
+        <div id="dropdownMenu" class="dropdown-box">
             <button onclick="logout()">Cerrar Sesión</button>
         </div>
     </div>
@@ -139,19 +149,22 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // FUNCIÓN ACTIVA CORREGIDA (Limpia y marca la pestaña seleccionada inmediatamente)
         function setActive(element) {
-            // Remueve la clase activa de todos los enlaces del documento
-            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
-            // Se la agrega únicamente al botón que fue presionado
+            // Busca todos los enlaces dentro del menú y les quita la clase active de golpe
+            document.querySelectorAll('#menuList a').forEach(link => {
+                link.classList.remove('active');
+            });
+            // Le clava la clase active únicamente al botón al que le acabas de dar clic
             element.classList.add('active');
         }
 
-        // CONTROL DEL DESPLEGABLE CORREGIDO
-        const avatarBtn = document.getElementById('avatarClick');
-        const dropdownMenu = document.getElementById('myDropdown');
+        // LÓGICA DE DETECCIÓN DEL CLIC EN EL VECTOR DE USUARIO
+        const avatarBtn = document.getElementById('avatarTrigger');
+        const dropdownMenu = document.getElementById('dropdownMenu');
 
         avatarBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que el evento se disipe en la estructura de marcos
+            e.stopPropagation(); // Evita que los marcos interfieran o bloqueen el clic
             if (dropdownMenu.style.display === 'block') {
                 dropdownMenu.style.display = 'none';
             } else {
@@ -159,15 +172,15 @@
             }
         });
 
-        // Oculta el menú desplegable si hacen clic en cualquier otra área de la barra
+        // Oculta el recuadro gris flotante si hacen clic en cualquier zona vacía del menú
         document.addEventListener('click', () => {
             dropdownMenu.style.display = 'none';
         });
 
-        // FUNCIÓN DE LOGOUT DEFINITIVA
+        // FUNCIÓN DE SALIDA A NIVEL RAÍZ
         async function logout() {
             await supabase.auth.signOut();
-            // Viaja a la raíz rompiendo los marcos para regresar al login de forma forzada
+            // Rompe los marcos por completo y regresa al login del index.html
             window.top.location.href = 'index.html'; 
         }
     </script>
