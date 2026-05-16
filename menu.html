@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -10,11 +11,12 @@
         }
 
         body {
-            /* Manteniendo el codigo CSS */
+            /* Manteniendo tu codigo CSS original intacto */
             background-color: #1a1a1a !important; 
             display: flex;
-            justify-content: center;
+            justify-content: space-between; /* Ajustado para que el botón de salir quede a la derecha */
             align-items: center;
+            padding: 0 40px;
             height: 100px; /* Ajustado al tamaño de la fila en el index */
             overflow: hidden;
             /* Misma fuente que las otras paginas */
@@ -55,23 +57,54 @@
             color: #ffffff !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
+
+        /* Estilo para tu nuevo botón de cerrar sesión acorde al diseño */
+        .btn-logout {
+            background-color: #b91d1d;
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-logout:hover {
+            background-color: #ffffff;
+            color: #1a1a1a;
+        }
     </style>
 </head>
 <body>
+
     <ul id="menuList">
         <li><a href="introduccion.html" target="contenido" onclick="setActive(this)" class="active">Home</a></li>
         <li><a href="biografia.html" target="contenido" onclick="setActive(this)">Biografía</a></li>
         <li><a href="discografia.html" target="contenido" onclick="setActive(this)">Discografía</a></li>
-        <!-- Nuevo botón agregado -->
         <li><a href="galeria.html" target="contenido" onclick="setActive(this)">Galería</a></li>
         <li><a href="poetica.html" target="contenido" onclick="setActive(this)">Poética</a></li>
         <li><a href="equipo.html" target="contenido" onclick="setActive(this)">Equipo</a></li>
     </ul>
 
+    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+
     <script>
+        const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         function setActive(element) {
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
+        }
+
+        async function logout() {
+            await supabase.auth.signOut();
+            // Recarga el sitio web completo desde la raíz para volver a activar el muro de login al instante
+            window.parent.location.reload(); 
         }
     </script>
 </body>
