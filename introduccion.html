@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Introducción | Ricardo Arjona</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
-        /* Manteniendo el codigo CSS intacto */
+        /* Manteniendo el codigo CSS */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -115,109 +112,58 @@
             color: #888;
             background-color: #1a1a1a;
         }
-
-        /* Contenedor del aviso de login interno */
-        .login-placeholder {
-            max-width: 450px;
-            margin: 80px auto;
-            padding: 50px 40px;
-            background-color: #3d3d3d;
-            border-radius: 4px;
-            border-left: 10px solid #b91d1d;
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.2);
-            text-align: center;
-        }
     </style>
 </head>
 <body>
 
-    <div id="lockScreen" class="login-placeholder" style="display: none;">
-        <h2 style="color: #ffffff; font-size: 2.2rem; letter-spacing: 2px; margin: 0 0 10px 0;">Bienvenido</h2>
-        <p style="color: #b91d1d; font-weight: bold; font-size: 1.1rem; text-transform: uppercase; margin: 0 0 25px 0;">Al Mundo de Ricardo Arjona</p>
-        <span style="color: #f4f4f4; font-size: 0.95rem; display: block; line-height: 1.5;">Por favor, inicia sesión utilizando el botón de Google en el menú superior para desbloquear el contenido completo del proyecto.</span>
-    </div>
+    <header>
+        <h1>Bienvenido</h1>
+        <p>EL MUNDO DE RICARDO ARJONA</p>
+    </header>
 
-    <div id="protectedContent" style="display: none;">
-        <header>
-            <h1>Bienvenido</h1>
-            <p>EL MUNDO DE RICARDO ARJONA</p>
-        </header>
-
-        <main class="container">
-            <section class="bio-section">
-                <h2>Introducción al Artista</h2>
-                <p>Ricardo Arjona es más que un cantautor; es un narrador de historias que ha capturado la esencia de la vida cotidiana, el amor y la crítica social a través de su lírica única.</p>
-                
-                <div class="image-container">
-                    <img src="arjona-intro.png" alt="Ricardo Arjona">
-                </div>
-
-                <div style="margin-top: 40px;">
-                    <h3>Cifras del Legado</h3>
-                    <ul class="stats-list">
-                        <li>
-                            <strong>+80M</strong>
-                            Ventas Mundiales
-                        </li>
-                        <li>
-                            <strong>15</strong>
-                            Álbumes de Estudio
-                        </li>
-                        <li>
-                            <strong>1</strong>
-                            Grammy Award
-                        </li>
-                        <li>
-                            <strong>1</strong>
-                            Latin Grammy
-                        </li>
-                    </ul>
-                </div>
-
-                <div style="margin-top: 40px;">
-                    <h3>Escucha su Éxito</h3>
-                    <div class="image-container" style="background: #1a1a1a;">
-                        <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/7J6IYudWsxHy3stN5aMKSN?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>© 2026 Proyecto Web Ricardo Arjona | Sección Introducción</p>
-        </footer>
-    </div>
-
-    <script>
-        const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        function checkSession(session) {
-            const lockScreen = document.getElementById('lockScreen');
-            const protectedContent = document.getElementById('protectedContent');
+    <main class="container">
+        <section class="bio-section">
+            <h2>Introducción al Artista</h2>
+            <p>Ricardo Arjona es más que un cantautor; es un narrador de historias que ha capturado la esencia de la vida cotidiana, el amor y la crítica social a través de su lírica única.</p>
             
-            if (session) {
-                // Si hay sesión, muestra tu contenido original y oculta el aviso
-                lockScreen.style.display = 'none';
-                protectedContent.style.display = 'block';
-            } else {
-                // Si no hay sesión, oculta tu contenido y muestra el aviso de login limpiamente
-                protectedContent.style.display = 'none';
-                lockScreen.style.display = 'block';
-            }
-        }
+            <div class="image-container">
+                <img src="arjona-intro.png" alt="Ricardo Arjona">
+            </div>
 
-        // Validación inicial al cargar la página
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            checkSession(session);
-        });
+            <div style="margin-top: 40px;">
+                <h3>Cifras del Legado</h3>
+                <ul class="stats-list">
+                    <li>
+                        <strong>+80M</strong>
+                        Ventas Mundiales
+                    </li>
+                    <li>
+                        <strong>15</strong>
+                        Álbumes de Estudio
+                    </li>
+                    <li>
+                        <strong>1</strong>
+                        Grammy Award
+                    </li>
+                    <li>
+                        <strong>1</strong>
+                        Latin Grammy
+                    </li>
+                </ul>
+            </div>
 
-        // Escucha cambios en tiempo real (Login / Logout)
-        supabase.auth.onAuthStateChange((event, session) => {
-            checkSession(session);
-        });
-    </script>
+            <div style="margin-top: 40px;">
+                <h3>Escucha su Éxito</h3>
+                <div class="image-container" style="background: #1a1a1a;">
+                    <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/track/7J6IYudWsxHy3stN5aMKSN?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Proyecto Web Ricardo Arjona | Sección Introducción</p>
+    </footer>
 
 </body>
 </html>
