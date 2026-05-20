@@ -141,13 +141,11 @@
     </div>
 
     <script>
-        // NOTA: Cambié el nombre a clienteSupabase para que no choque con la librería y rompa el código
         const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function setActive(element) {
-            // NOTA: Quita lo rojo de todos y se lo pone al que le di clic
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
         }
@@ -167,14 +165,14 @@
         }
 
         async function logout() {
-            // 1. Cerramos la sesión en Supabase
+            // 1. Cerramos sesión
             await clienteSupabase.auth.signOut();
             
-            // 2. Vaciamos memorias locales
+            // 2. Limpiamos memorias
             localStorage.clear();
             sessionStorage.clear();
             
-            // 3. Redirección forzada pasándole el parámetro de salida (?logout=true)
+            // 3. Forzamos la redirección con el parámetro definitivo de salida
             window.top.location.href = 'https://maferruano.github.io/Proyecto_ISDC/index.html?logout=true';
         }
     </script>
