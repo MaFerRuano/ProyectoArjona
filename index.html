@@ -105,7 +105,7 @@
     const ignorarSesion = urlParams.get('logout');
 
     if (ignorarSesion === 'true') {
-        // Bloqueo inmediato sin consultar a Supabase
+        // Bloqueo inmediato sin consultar a Supabase para evitar el bucle de memoria
         overlay.style.display = 'flex';
     } else {
         // Comportamiento normal si no estamos cerrando sesión
