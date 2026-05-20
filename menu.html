@@ -168,7 +168,9 @@
 
         async function logout() {
             await clienteSupabase.auth.signOut();
-            window.top.location.href = 'index.html'; 
+            /* NOTA: Se refresca la pantalla completa de la raíz (dashboard.html) 
+               para que el sistema detecte el cierre de sesión y levante el pop-up de inmediato */
+            window.top.location.reload(); 
         }
     </script>
 </body>
