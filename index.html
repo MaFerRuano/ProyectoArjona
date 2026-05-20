@@ -14,7 +14,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(26, 26, 26, 0.95); /* Un poco más oscuro para que no se interactúe por error */
+            background-color: rgba(26, 26, 26, 0.95); 
             backdrop-filter: blur(5px); 
             z-index: 999999; 
             justify-content: center;
@@ -100,16 +100,25 @@
     const overlay = document.getElementById('loginOverlay');
     document.documentElement.appendChild(overlay);
 
-    // NOTA: Esto se queda vigilando en tiempo real si la sesión sube o baja
-    clienteSupabase.auth.onAuthStateChange((event, session) => {
-        if (session) {
-            overlay.style.display = 'none';
-        } else {
-            overlay.style.display = 'flex';
-        }
-    });
+    // NOTA: Revisamos si venimos forzados por el botón de Cerrar Sesión
+    const urlParams = new URLSearchParams(window.location.search);
+    const ignorarSesion = urlParams.get('logout');
 
-    // Evento del botón de Google
+    if (ignorarSesion === 'true') {
+        // Bloqueo inmediato sin consultar a Supabase
+        overlay.style.display = 'flex';
+    } else {
+        // Comportamiento normal si no estamos cerrando sesión
+        clienteSupabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+            }
+        });
+    }
+
+    // Evento del botón de Google hacia la raíz
     document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
         await clienteSupabase.auth.signInWithOAuth({
             provider: 'google',
