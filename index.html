@@ -14,9 +14,9 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(26, 26, 26, 0.85); /* Fondo oscuro con transparencia para que se vea el sitio atrás */
+            background-color: rgba(26, 26, 26, 0.9); /* Fondo oscuro con transparencia para que se vea el sitio atrás */
             backdrop-filter: blur(5px); /* Efecto borroso elegante para el fondo */
-            z-index: 99999; /* Asegura que se ponga encima de los marcos */
+            z-index: 999999; /* Máxima prioridad para ponerse encima de los marcos */
             justify-content: center;
             align-items: center;
         }
@@ -74,19 +74,21 @@
     </style>
 </head>
 
-<div id="loginOverlay">
-    <div class="login-box">
-        <h1>Bienvenido</h1>
-        <p>Al Mundo de Ricardo Arjona</p>
-        <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
-    </div>
-</div>
-
 <frameset rows="120, *" border="0" frameborder="0" framespacing="0">
     <frame src="menu.html" name="menu" noresize scrolling="no">
     <frame src="introduccion.html" name="contenido">
+    
     <noframes>
-        <body><p>Tu navegador no soporta marcos.</p></body>
+        <body>
+            <div id="loginOverlay">
+                <div class="login-box">
+                    <h1>Bienvenido</h1>
+                    <p>Al Mundo de Ricardo Arjona</p>
+                    <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
+                </div>
+            </div>
+            <p>Tu navegador no soporta marcos.</p>
+        </body>
     </noframes>
 </frameset>
 
@@ -97,7 +99,10 @@
 
     const overlay = document.getElementById('loginOverlay');
 
-    // Evaluamos la sesión
+    // IMPORTANTE: Sacamos el div del noframes y lo pegamos directamente al entorno raíz para que flote encima de los marcos
+    document.documentElement.appendChild(overlay);
+
+    // Evaluamos la sesión activa
     clienteSupabase.auth.getSession().then(({ data: { session } }) => {
         controlAcceso(session);
     });
@@ -110,12 +115,11 @@
         }
     }
 
-    // Evento del botón de Google
+    // Evento del botón de Google hacia la raíz del proyecto
     document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
         await clienteSupabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                /* NOTA MAFER: Ahora la redirección apunta directamente a la raíz de tu proyecto */
                 redirectTo: 'https://maferruano.github.io/Proyecto_ISDC/',
                 queryParams: {
                     prompt: 'select_account'
