@@ -6,7 +6,21 @@
     <title>Ricardo Arjona - Proyecto Oficial</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        /* La capa oscura que cubre todo el sitio de fondo */
+        /* Estilos globales para cuando se destruyen los marcos en el login */
+        html.login-active, body.login-active {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #2c2c2c !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f4f4f4;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* La capa oscura del pop-up flotante */
         #loginOverlay {
             display: none; 
             position: fixed;
@@ -74,41 +88,54 @@
     </style>
 </head>
 
-<frameset rows="120, *" border="0" frameborder="0" framespacing="0">
-    <frame src="menu.html" name="menu" noresize scrolling="no">
-    <frame src="introduccion.html" name="contenido">
-    
-    <noframes>
-        <body>
-            <div id="loginOverlay">
+<script>
+    // NOTA MAFER: Validamos de inmediato si venimos de cerrar sesión ANTES de pintar los marcos
+    const urlParams = new URLSearchParams(window.location.search);
+    const ignorarSesion = urlParams.get('logout');
+
+    if (ignorarSesion === 'true') {
+        // Rompemos la carga de marcos inyectando directamente tu caja de login clásica en pantalla limpia
+        document.documentElement.classList.add('login-active');
+        document.write(`
+            <body class="login-active">
                 <div class="login-box">
                     <h1>Bienvenido</h1>
                     <p>Al Mundo de Ricardo Arjona</p>
                     <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
                 </div>
-            </div>
-            <p>Tu navegador no soporta marcos.</p>
-        </body>
-    </noframes>
-</frameset>
+            </body>
+        `);
+    } else {
+        // Si no es un logout, pintamos la estructura normal de marcos
+        document.write(`
+            <frameset rows="120, *" border="0" frameborder="0" framespacing="0" id="mainFrameset">
+                <frame src="menu.html" name="menu" noresize scrolling="no">
+                <frame src="introduccion.html" name="contenido">
+            </frameset>
+        `);
+    }
+</script>
 
 <script>
+    // Inicialización del cliente
     const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
     const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const overlay = document.getElementById('loginOverlay');
-    document.documentElement.appendChild(overlay);
+    // Si entramos de forma normal (sin el parámetro logout), dejamos que Supabase maneje el pop-up flotante
+    if (ignorarSesion !== 'true') {
+        // Creamos dinámicamente la capa flotante sobre los marcos
+        const overlay = document.createElement('div');
+        overlay.id = 'loginOverlay';
+        overlay.innerHTML = `
+            <div class="login-box">
+                <h1>Bienvenido</h1>
+                <p>Al Mundo de Ricardo Arjona</p>
+                <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
+            </div>
+        `;
+        document.documentElement.appendChild(overlay);
 
-    // NOTA: Revisamos si venimos forzados por el botón de Cerrar Sesión
-    const urlParams = new URLSearchParams(window.location.search);
-    const ignorarSesion = urlParams.get('logout');
-
-    if (ignorarSesion === 'true') {
-        // Bloqueo inmediato sin consultar a Supabase para evitar el bucle de memoria
-        overlay.style.display = 'flex';
-    } else {
-        // Comportamiento normal si no estamos cerrando sesión
         clienteSupabase.auth.onAuthStateChange((event, session) => {
             if (session) {
                 overlay.style.display = 'none';
@@ -118,7 +145,7 @@
         });
     }
 
-    // Evento del botón de Google hacia la raíz
+    // Vinculamos el evento del botón de Google (sirve para ambos casos)
     document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
         await clienteSupabase.auth.signInWithOAuth({
             provider: 'google',
