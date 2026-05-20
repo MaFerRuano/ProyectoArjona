@@ -8,15 +8,15 @@
     <style>
         /* La capa oscura que cubre todo el sitio de fondo */
         #loginOverlay {
-            display: none; /* Oculto por defecto hasta que JS evalúe */
+            display: none; 
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(26, 26, 26, 0.9); /* Fondo oscuro con transparencia para que se vea el sitio atrás */
-            backdrop-filter: blur(5px); /* Efecto borroso elegante para el fondo */
-            z-index: 999999; /* Máxima prioridad para ponerse encima de los marcos */
+            background-color: rgba(26, 26, 26, 0.95); /* Un poco más oscuro para que no se interactúe por error */
+            backdrop-filter: blur(5px); 
+            z-index: 999999; 
             justify-content: center;
             align-items: center;
         }
@@ -98,24 +98,18 @@
     const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const overlay = document.getElementById('loginOverlay');
-
-    // IMPORTANTE: Sacamos el div del noframes y lo pegamos directamente al entorno raíz para que flote encima de los marcos
     document.documentElement.appendChild(overlay);
 
-    // Evaluamos la sesión activa
-    clienteSupabase.auth.getSession().then(({ data: { session } }) => {
-        controlAcceso(session);
-    });
-
-    function controlAcceso(session) {
+    // NOTA: Esto se queda vigilando en tiempo real si la sesión sube o baja
+    clienteSupabase.auth.onAuthStateChange((event, session) => {
         if (session) {
             overlay.style.display = 'none';
         } else {
             overlay.style.display = 'flex';
         }
-    }
+    });
 
-    // Evento del botón de Google hacia la raíz del proyecto
+    // Evento del botón de Google
     document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
         await clienteSupabase.auth.signInWithOAuth({
             provider: 'google',
