@@ -167,10 +167,15 @@
         }
 
         async function logout() {
+            // 1. Cerramos la sesión en Supabase
             await clienteSupabase.auth.signOut();
-            /* NOTA: Se refresca la pantalla completa de la raíz (dashboard.html) 
-               para que el sistema detecte el cierre de sesión y levante el pop-up de inmediato */
-            window.top.location.reload(); 
+            
+            // 2. Vaciamos memorias locales
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // 3. Redirección forzada pasándole el parámetro de salida (?logout=true)
+            window.top.location.href = 'https://maferruano.github.io/Proyecto_ISDC/index.html?logout=true';
         }
     </script>
 </body>
