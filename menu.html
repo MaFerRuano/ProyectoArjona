@@ -171,4 +171,66 @@
             if (ua.includes("Edg")) navegadorInfo = "Edge";
             else if (ua.includes("Chrome")) navegadorInfo = "Chrome";
             else if (ua.includes("Firefox")) navegadorInfo = "Firefox";
-            else if (ua.includes("Safari") && !ua.includes
+            else if (ua.includes("Safari") && !ua.includes("Chrome")) navegadorInfo = "Safari";
+
+            try {
+                await clienteSupabase.from('analiticas').insert([{
+                    page_url: 'introduccion.html',
+                    event_type: 'page_view',
+                    user_email: correoUsuario,
+                    browser: navegadorInfo
+                }]);
+            } catch (e) {}
+        }
+
+        inicializarMenu();
+
+        function setActive(element) {
+            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+            
+            const rutaDestino = element.getAttribute('href');
+            clienteSupabase.auth.getSession().then(({ data: { session } }) => {
+                clienteSupabase.from('analiticas').insert([{
+                    page_url: rutaDestino,
+                    event_type: 'page_view',
+                    user_email: session ? session.user.email : 'anonimo'
+                }]).then();
+            });
+        }
+
+        function toggleMenu(event) {
+            event.stopPropagation();
+            document.getElementById("dropdownMenu").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.vector-avatar-btn')) {
+                var dropdown = document.getElementById("dropdownMenu");
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+
+        function abrirPanelAdmin() {
+            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+            window.open('admin.html', 'contenido');
+            document.getElementById("dropdownMenu").classList.remove('show');
+        }
+
+        async function logout() {
+            const { data: { session } } = await clienteSupabase.auth.getSession();
+            if (session) {
+                await clienteSupabase.from('analiticas').insert([{
+                    page_url: 'menu_superior', event_type: 'logout', user_email: session.user.email
+                }]);
+            }
+            await clienteSupabase.auth.signOut();
+            localStorage.clear();
+            sessionStorage.clear();
+            window.top.location.reload();
+        }
+    </script>
+</body>
+</html>
