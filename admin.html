@@ -136,7 +136,6 @@
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #333;
-            margin-bottom: 30px;
         }
 
         .panel-grafica h3 {
@@ -241,7 +240,7 @@
 
         <div class="grid-graficas-principales">
             <div class="panel-grafica">
-                <h3>Visitas a lo largo del tiempo</h3>
+                <h3>Visitas a lo largo del tiempo (Por Día)</h3>
                 <div class="canvas-container">
                     <canvas id="graficaTiempo"></canvas>
                 </div>
@@ -283,6 +282,7 @@
             const haceUnaSemana = new Date();
             haceUnaSemana.setDate(hoy.getDate() - 7);
 
+            // Ajustamos los calendarios por defecto
             document.getElementById('fechaFin').value = hoy.toISOString().substring(0, 10);
             document.getElementById('fechaInicio').value = haceUnaSemana.toISOString().substring(0, 10);
             
@@ -295,46 +295,40 @@
 
         async function cargarDashboard() {
             try {
-                // 1. VALIDACIÓN DE SESIÓN EN SUPABASE
+                // 1. SEGURIDAD
                 const { data: { session }, error: errorSesion } = await clienteSupabase.auth.getSession();
                 if (errorSesion) throw errorSesion;
-
                 if (!session) { 
-                    document.getElementById('pantallaBloqueo').innerHTML = "<h1>Sesión Inactiva</h1><p>No se detectó un inicio de sesión activo. Por favor ingresa desde el login principal.</p>"; 
+                    document.getElementById('pantallaBloqueo').innerHTML = "<h1>Sesión Inactiva</h1><p>Debes iniciar sesión primero.</p>"; 
                     return; 
                 }
 
                 const correo = session.user.email;
-
-                // 2. VALIDACIÓN CONTRA LA TABLA DE ADMINISTRADORES
                 const { data: admins, error: errorAdmin } = await clienteSupabase.from('admins').select('*').eq('email', correo);
                 if (errorAdmin) throw errorAdmin;
-
                 if (!admins || admins.length === 0) {
-                    document.getElementById('pantallaBloqueo').innerHTML = `<h1>Acceso Denegado</h1><p>El correo <strong>${correo}</strong> no figura en la lista blanca de la tabla 'admins'.</p>`; 
+                    document.getElementById('pantallaBloqueo').innerHTML = `<h1>Acceso Denegado</h1><p>No tienes permisos de administrador.</p>`; 
                     return;
                 }
 
-                // Si las dos pruebas pasan, liberamos el Dashboard
                 document.getElementById('pantallaBloqueo').style.display = 'none';
                 document.getElementById('dashboardPrincipal').style.display = 'block';
 
-                // Mostrar el nombre en el h2
                 const nombreTemporal = correo.split('@')[0];
                 document.getElementById('nombreAdmin').innerText = nombreTemporal;
 
-                // 3. EXTRACCIÓN DE PARÁMETROS DE FECHAS
+                // 2. FILTROS DE FECHA PUROS (Sin zonas horarias cruzadas)
                 const fInicio = document.getElementById('fechaInicio').value;
                 const fFin = document.getElementById('fechaFin').value;
 
                 let query = clienteSupabase.from('analiticas').select('*');
-                if (fInicio) query = query.gte('created_at', `${fInicio} 00:00:00`);
-                if (fFin) query = query.lte('created_at', `${fFin} 23:59:59`);
+                if (fInicio) query = query.gte('created_at', fInicio + ' 00:00:00');
+                if (fFin) query = query.lte('created_at', fFin + ' 23:59:59');
 
                 const { data: analiticas, error: errorAnaliticas } = await query;
                 if (errorAnaliticas) throw errorAnaliticas;
 
-                // 4. PROCESAMIENTO ESTADÍSTICO
+                // 3. EXTRACCIÓN DE DATOS SIN CONVERSIÓN DE FECHAS
                 let totalVistas = 0;
                 const conteoPaginas = {};
                 const conteoNavegadores = {};
@@ -347,12 +341,15 @@
                     if (reg.event_type === 'page_view') {
                         totalVistas++;
                         
-                        // Extracción de caracteres segura YYYY-MM-DD
-                        const diaTexto = reg.created_at.substring(0, 10); 
+                        // Normalizamos el texto (reemplazamos T por espacio por si acaso)
+                        const fechaCruda = reg.created_at.replace('T', ' ');
+
+                        // Tomamos siempre los primeros 10 caracteres para el Día (Ej. 2026-05-21)
+                        const diaTexto = fechaCruda.substring(0, 10);
                         conteoFechas[diaTexto] = (conteoFechas[diaTexto] || 0) + 1;
 
-                        // Extracción de hora segura HH:00
-                        const horaTexto = reg.created_at.substring(11, 13) + ":00"; 
+                        // Tomamos siempre los caracteres 11 y 12 para la Hora (Ej. 14:00)
+                        const horaTexto = fechaCruda.substring(11, 13) + ":00";
                         conteoHoras[horaTexto] = (conteoHoras[horaTexto] || 0) + 1;
 
                         let pag = reg.page_url.replace('.html', '').toUpperCase();
@@ -366,12 +363,12 @@
 
                         if (reg.user_email !== 'anonimo') {
                             if (!sesionesUsuario[reg.user_email]) sesionesUsuario[reg.user_email] = [];
-                            sesionesUsuario[reg.user_email].push(new Date(reg.created_at.replace(' ', 'T')).getTime());
+                            sesionesUsuario[reg.user_email].push(new Date(fechaCruda.replace(' ', 'T')).getTime());
                         }
                     }
                 });
 
-                // Llenar Tarjetas Superiores
+                // Cajas Superiores
                 document.getElementById('totalVisitas').innerText = totalVistas;
                 
                 let maxVistas = 0, pagGanadora = "-";
@@ -383,7 +380,6 @@
                 const usuariosUnicos = new Set(analiticas.map(a => a.user_email).filter(e => e !== 'anonimo'));
                 document.getElementById('totalLogins').innerText = usuariosUnicos.size;
 
-                // Duración promedio
                 let minutosTotales = 0;
                 let usuariosCalculados = 0;
                 for (let email in sesionesUsuario) {
@@ -404,7 +400,7 @@
                     document.getElementById('tiempoPromedio').innerText = `${mins}m ${secs}s`;
                 }
 
-                // 5. GRÁFICA DE LÍNEAS (DÍAS)
+                // 4. GRÁFICA DE DÍAS (LÍNEA CON PUNTOS GRUESOS)
                 Chart.defaults.color = '#aaaaaa';
                 const ctxDias = document.getElementById('graficaTiempo').getContext('2d');
                 if (myChartDias) myChartDias.destroy(); 
@@ -415,7 +411,7 @@
                 myChartDias = new Chart(ctxDias, {
                     type: 'line',
                     data: {
-                        labels: fechasOrdenadas,
+                        labels: fechasOrdenadas, // Aquí saldrán las fechas abajo en el eje X
                         datasets: [{
                             label: 'Visitas',
                             data: valoresFechas,
@@ -424,7 +420,9 @@
                             borderWidth: 2,
                             fill: true,
                             tension: 0.3, 
-                            pointBackgroundColor: '#ffffff'
+                            pointBackgroundColor: '#ffffff',
+                            pointRadius: 6, // Puntos gruesos para que se vean aunque solo haya 1 día
+                            pointHoverRadius: 8
                         }]
                     },
                     options: {
@@ -436,12 +434,15 @@
                         },
                         scales: {
                             y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { stepSize: 1 } },
-                            x: { grid: { display: false } }
+                            x: { 
+                                grid: { display: false },
+                                ticks: { color: '#aaaaaa' } // Asegura que las fechas abajo sean legibles
+                            }
                         }
                     }
                 });
 
-                // 6. GRÁFICA DE BARRAS (HORAS PICO)
+                // 5. GRÁFICA DE HORAS (BARRAS)
                 const ctxHoras = document.getElementById('graficaHoras').getContext('2d');
                 if (myChartHoras) myChartHoras.destroy(); 
                 
@@ -473,19 +474,16 @@
                     }
                 });
 
-                // Render de listas horizontales
+                // 6. RENDER DE LISTAS HORIZONTALES
                 renderListaHTML('listaPaginas', conteoPaginas);
                 renderListaHTML('listaNavegadores', conteoNavegadores);
                 renderListaHTML('listaPaises', conteoPaises);
 
             } catch (err) {
-                console.error("Error crítico detectado en el dashboard:", err);
-                // Si hay un fallo de base de datos o sintaxis, se inyectará aquí de inmediato
+                console.error("Error detectado en el dashboard:", err);
                 document.getElementById('pantallaBloqueo').innerHTML = `
-                    <h1 style="color: #b91d1d;">Error de Validación</h1>
-                    <p>Ocurrió un problema técnico al conectar con Supabase:</p>
-                    <code style="background:#000; padding:10px; color:#ff4d4d; border-radius:4px; display:inline-block; margin-top:10px;">${err.message || err}</code>
-                    <p style="font-size:0.9rem; color:#888; margin-top:20px;">Verifica que las tablas 'admins' y 'analiticas' existan con los nombres de columnas correctos.</p>
+                    <h1 style="color: #b91d1d;">Error Técnico</h1>
+                    <code style="background:#000; padding:10px; color:#ff4d4d; border-radius:4px; margin-top:10px;">${err.message || err}</code>
                 `;
             }
         }
@@ -512,7 +510,7 @@
             });
 
             if (arrayDatos.length === 0) {
-                contenedor.innerHTML = '<p style="color:#666; font-size:0.9rem;">No hay datos.</p>';
+                contenedor.innerHTML = '<p style="color:#666; font-size:0.9rem;">No hay datos para esta fecha.</p>';
             }
         }
     </script>
