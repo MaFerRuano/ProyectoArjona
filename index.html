@@ -8,18 +8,16 @@
     <style>
         /* La capa oscura que cubre todo el sitio de fondo */
         #loginOverlay {
-            display: none; /* Se controla con JS */
+            display: none; 
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            /* NOTA MAFER: Usamos un fondo negro con 0.75 de opacidad para que se transluzca el sitio de atrás */
             background-color: rgba(26, 26, 26, 0.75) !important; 
-            /* NOTA MAFER: Este es el efecto borroso para el fondo que pidió tu maestro */
             backdrop-filter: blur(5px) !important; 
             -webkit-backdrop-filter: blur(5px);
-            z-index: 99999999 !important; /* Máxima prioridad absoluta para flotar sobre los marcos */
+            z-index: 99999999 !important; 
             justify-content: center;
             align-items: center;
         }
@@ -80,7 +78,6 @@
 <frameset rows="120, *" border="0" frameborder="0" framespacing="0">
     <frame src="menu.html" name="menu" noresize scrolling="no">
     <frame src="introduccion.html" name="contenido">
-    
     <noframes>
         <body>
             <p>Tu navegador no soporta marcos.</p>
@@ -93,7 +90,7 @@
     const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
     const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // NOTA MAFER: Creamos el contenedor del pop-up flotante de manera dinámica desde la raíz del documento
+    // Creamos el contenedor del pop-up flotante dinámicamente
     const overlay = document.createElement('div');
     overlay.id = 'loginOverlay';
     overlay.innerHTML = `
@@ -103,26 +100,25 @@
             <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
         </div>
     `;
-    // Forzamos a que se pegue al HTML por encima del entorno de los marcos
     document.documentElement.appendChild(overlay);
 
-    // Revisamos si venimos forzados por el botón de Cerrar Sesión
-    const urlParams = new URLSearchParams(window.location.search);
-    const ignorarSesion = urlParams.get('logout');
+    // 1. Escuchamos en tiempo real si hay sesión activa (Sin bloqueos manuales)
+    clienteSupabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+            overlay.style.display = 'none';
+        } else {
+            overlay.style.display = 'flex';
+        }
+    });
 
-    if (ignorarSesion === 'true') {
-        // Bloqueo inmediato en pantalla mostrando tu sitio de fondo
-        overlay.style.display = 'flex';
-    } else {
-        // Monitoreo normal de la sesión activa
-        clienteSupabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                overlay.style.display = 'none';
-            } else {
-                overlay.style.display = 'flex';
-            }
-        });
-    }
+    // 2. Revisamos al cargar la página por primera vez
+    clienteSupabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            overlay.style.display = 'none';
+        } else {
+            overlay.style.display = 'flex';
+        }
+    });
 
     // Evento del botón de Google
     document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
