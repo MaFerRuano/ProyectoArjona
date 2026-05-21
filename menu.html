@@ -15,7 +15,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100px;
+            height: 100px; 
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-bottom: 5px solid #b91d1d; 
@@ -157,12 +157,13 @@
         }
 
         async function logout() {
-            // 1. Matamos la sesión en Supabase de forma segura
+            // Cerramos sesión
             await clienteSupabase.auth.signOut();
+            localStorage.clear();
+            sessionStorage.clear();
             
-            // 2. Redirigimos a la raíz pero inyectando la hora actual exacta al final de la URL
-            // Esto le avisa al navegador que debe descargar la página nueva 100% fresca y sin cachés trabados.
-            window.top.location.href = 'https://maferruano.github.io/Proyecto_ISDC/?reload=' + new Date().getTime();
+            // Refrescamos la ventana principal para que el index.html bloquee de nuevo
+            window.top.location.reload();
         }
     </script>
 </body>
