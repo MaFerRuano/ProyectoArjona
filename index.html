@@ -6,31 +6,20 @@
     <title>Ricardo Arjona - Proyecto Oficial</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        /* Estilos globales para cuando se destruyen los marcos en el login */
-        html.login-active, body.login-active {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background-color: #2c2c2c !important;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #f4f4f4;
-            display: flex !important;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        /* La capa oscura del pop-up flotante */
+        /* La capa oscura que cubre todo el sitio de fondo */
         #loginOverlay {
-            display: none; 
+            display: none; /* Se controla con JS */
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(26, 26, 26, 0.95); 
-            backdrop-filter: blur(5px); 
-            z-index: 999999; 
+            /* NOTA MAFER: Usamos un fondo negro con 0.75 de opacidad para que se transluzca el sitio de atrás */
+            background-color: rgba(26, 26, 26, 0.75) !important; 
+            /* NOTA MAFER: Este es el efecto borroso para el fondo que pidió tu maestro */
+            backdrop-filter: blur(5px) !important; 
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 99999999 !important; /* Máxima prioridad absoluta para flotar sobre los marcos */
             justify-content: center;
             align-items: center;
         }
@@ -88,54 +77,44 @@
     </style>
 </head>
 
-<script>
-    // NOTA MAFER: Validamos de inmediato si venimos de cerrar sesión ANTES de pintar los marcos
-    const urlParams = new URLSearchParams(window.location.search);
-    const ignorarSesion = urlParams.get('logout');
-
-    if (ignorarSesion === 'true') {
-        // Rompemos la carga de marcos inyectando directamente tu caja de login clásica en pantalla limpia
-        document.documentElement.classList.add('login-active');
-        document.write(`
-            <body class="login-active">
-                <div class="login-box">
-                    <h1>Bienvenido</h1>
-                    <p>Al Mundo de Ricardo Arjona</p>
-                    <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
-                </div>
-            </body>
-        `);
-    } else {
-        // Si no es un logout, pintamos la estructura normal de marcos
-        document.write(`
-            <frameset rows="120, *" border="0" frameborder="0" framespacing="0" id="mainFrameset">
-                <frame src="menu.html" name="menu" noresize scrolling="no">
-                <frame src="introduccion.html" name="contenido">
-            </frameset>
-        `);
-    }
-</script>
+<frameset rows="120, *" border="0" frameborder="0" framespacing="0">
+    <frame src="menu.html" name="menu" noresize scrolling="no">
+    <frame src="introduccion.html" name="contenido">
+    
+    <noframes>
+        <body>
+            <p>Tu navegador no soporta marcos.</p>
+        </body>
+    </noframes>
+</frameset>
 
 <script>
-    // Inicialización del cliente
     const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
     const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Si entramos de forma normal (sin el parámetro logout), dejamos que Supabase maneje el pop-up flotante
-    if (ignorarSesion !== 'true') {
-        // Creamos dinámicamente la capa flotante sobre los marcos
-        const overlay = document.createElement('div');
-        overlay.id = 'loginOverlay';
-        overlay.innerHTML = `
-            <div class="login-box">
-                <h1>Bienvenido</h1>
-                <p>Al Mundo de Ricardo Arjona</p>
-                <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
-            </div>
-        `;
-        document.documentElement.appendChild(overlay);
+    // NOTA MAFER: Creamos el contenedor del pop-up flotante de manera dinámica desde la raíz del documento
+    const overlay = document.createElement('div');
+    overlay.id = 'loginOverlay';
+    overlay.innerHTML = `
+        <div class="login-box">
+            <h1>Bienvenido</h1>
+            <p>Al Mundo de Ricardo Arjona</p>
+            <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
+        </div>
+    `;
+    // Forzamos a que se pegue al HTML por encima del entorno de los marcos
+    document.documentElement.appendChild(overlay);
 
+    // Revisamos si venimos forzados por el botón de Cerrar Sesión
+    const urlParams = new URLSearchParams(window.location.search);
+    const ignorarSesion = urlParams.get('logout');
+
+    if (ignorarSesion === 'true') {
+        // Bloqueo inmediato en pantalla mostrando tu sitio de fondo
+        overlay.style.display = 'flex';
+    } else {
+        // Monitoreo normal de la sesión activa
         clienteSupabase.auth.onAuthStateChange((event, session) => {
             if (session) {
                 overlay.style.display = 'none';
@@ -145,7 +124,7 @@
         });
     }
 
-    // Vinculamos el evento del botón de Google (sirve para ambos casos)
+    // Evento del botón de Google
     document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
         await clienteSupabase.auth.signInWithOAuth({
             provider: 'google',
