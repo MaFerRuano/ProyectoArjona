@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración</title>
+    <title>Analíticas - Proyecto Arjona</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -12,10 +12,10 @@
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 40px;
+            padding: 30px 40px;
         }
 
-        /* Pantalla de bloqueo si intentan entrar sin permiso */
+        /* PANTALLA DE BLOQUEO */
         #pantallaBloqueo {
             display: flex;
             flex-direction: column;
@@ -31,60 +31,73 @@
             text-transform: uppercase;
         }
 
-        /* Contenedor principal del Dashboard oculto por defecto */
+        /* CONTENEDOR DEL DASHBOARD */
         #dashboardPrincipal {
             display: none;
             max-width: 1200px;
             margin: 0 auto;
         }
 
+        /* ENCABEZADO Y FILTROS */
         .header-dashboard {
-            border-bottom: 3px solid #b91d1d;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #3d3d3d;
+            padding-bottom: 20px;
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .header-dashboard h1 {
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             margin: 0;
+            font-size: 1.8rem;
         }
 
-        /* Grid estilo Google Analytics */
-        .grid-graficas {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-        }
-
-        .tarjeta-grafica {
-            background-color: #3d3d3d;
-            padding: 20px;
+        .controles-fecha {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background-color: #2c2c2c;
+            padding: 10px 20px;
             border-radius: 6px;
-            border-top: 5px solid #b91d1d;
-            box-shadow: 0px 10px 15px rgba(0,0,0,0.5);
+            border-left: 4px solid #b91d1d;
         }
 
-        .tarjeta-grafica h3 {
-            margin-top: 0;
+        .controles-fecha label {
+            font-size: 0.85rem;
             text-transform: uppercase;
-            color: #f4f4f4;
-            font-size: 1.1rem;
-            text-align: center;
-            margin-bottom: 20px;
+            font-weight: bold;
+            color: #aaaaaa;
         }
 
-        /* Contenedor para que las gráficas sean responsivas */
-        .canvas-container {
-            position: relative;
-            height: 350px;
-            width: 100%;
+        .controles-fecha input[type="date"] {
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 10px;
+            border-radius: 4px;
+            color-scheme: dark; /* Hace que el calendario nativo sea oscuro */
+            font-family: inherit;
         }
 
-        /* Estadísticas rápidas arriba */
+        .btn-filtrar {
+            background-color: #b91d1d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .btn-filtrar:hover { background-color: #e62424; }
+
+        /* ESTADÍSTICAS RÁPIDAS */
         .stats-rapidas {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -93,15 +106,83 @@
         }
 
         .stat-caja {
-            background-color: #2c2c2c;
+            background-color: #242424;
             padding: 20px;
-            border-radius: 6px;
-            text-align: center;
-            border-left: 5px solid #b91d1d;
+            border-radius: 8px;
+            border: 1px solid #333;
         }
 
-        .stat-caja h4 { margin: 0; color: #aaaaaa; text-transform: uppercase; font-size: 0.9rem; }
-        .stat-caja p { margin: 10px 0 0 0; font-size: 2.5rem; font-weight: bold; color: #ffffff; }
+        .stat-caja h4 { margin: 0; color: #888888; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;}
+        .stat-caja p { margin: 10px 0 0 0; font-size: 2.2rem; font-weight: bold; color: #ffffff; }
+
+        /* SECCIÓN DE GRÁFICAS Y LISTAS */
+        .panel-grafica {
+            background-color: #242424;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .panel-grafica h3 {
+            margin-top: 0;
+            text-transform: uppercase;
+            font-size: 1rem;
+            color: #aaaaaa;
+            margin-bottom: 20px;
+        }
+
+        .canvas-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .grid-listas {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* ESTILO DE BARRAS HORIZONTALES (Como tu imagen) */
+        .lista-contenedor {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .lista-item {
+            position: relative;
+            background-color: #1a1a1a;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border: 1px solid #333;
+        }
+
+        .lista-barra-fondo {
+            position: absolute;
+            top: 0; left: 0; height: 100%;
+            background-color: rgba(185, 29, 29, 0.2); /* Rojo semi-transparente */
+            border-left: 3px solid #b91d1d; /* Borde rojo sólido */
+            z-index: 1;
+            transition: width 0.5s ease;
+        }
+
+        .lista-texto {
+            position: relative;
+            z-index: 2;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .lista-valor {
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -113,8 +194,15 @@
 
     <div id="dashboardPrincipal">
         <div class="header-dashboard">
-            <h1>Google Analytics - Proyecto Arjona</h1>
-            <p id="txtUsuario">Admin conectado</p>
+            <h1>Analíticas - Proyecto Arjona</h1>
+            
+            <div class="controles-fecha">
+                <label>Desde:</label>
+                <input type="date" id="fechaInicio">
+                <label>Hasta:</label>
+                <input type="date" id="fechaFin">
+                <button class="btn-filtrar" onclick="aplicarFiltros()">Filtrar</button>
+            </div>
         </div>
 
         <div class="stats-rapidas">
@@ -124,7 +212,7 @@
             </div>
             <div class="stat-caja">
                 <h4>Página más popular</h4>
-                <p id="topPage" style="font-size: 1.5rem; padding-top:15px;">-</p>
+                <p id="topPage" style="font-size: 1.5rem; padding-top:10px;">-</p>
             </div>
             <div class="stat-caja">
                 <h4>Inicios de Sesión</h4>
@@ -132,18 +220,25 @@
             </div>
         </div>
 
-        <div class="grid-graficas">
-            <div class="tarjeta-grafica">
-                <h3>Vistas por Sección</h3>
-                <div class="canvas-container">
-                    <canvas id="graficaPaginas"></canvas>
-                </div>
+        <div class="panel-grafica">
+            <h3>Visitas a lo largo del tiempo</h3>
+            <div class="canvas-container">
+                <canvas id="graficaTiempo"></canvas>
             </div>
-            <div class="tarjeta-grafica">
-                <h3>Navegadores de Usuarios</h3>
-                <div class="canvas-container">
-                    <canvas id="graficaNavegadores"></canvas>
-                </div>
+        </div>
+
+        <div class="grid-listas">
+            <div class="panel-grafica">
+                <h3>Páginas (Page)</h3>
+                <div class="lista-contenedor" id="listaPaginas"></div>
+            </div>
+            <div class="panel-grafica">
+                <h3>Navegadores (Browser)</h3>
+                <div class="lista-contenedor" id="listaNavegadores"></div>
+            </div>
+            <div class="panel-grafica">
+                <h3>Países (Country)</h3>
+                <div class="lista-contenedor" id="listaPaises"></div>
             </div>
         </div>
     </div>
@@ -153,85 +248,110 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Colores de tu paleta CSS para las gráficas
-        const coloresArjona = ['#b91d1d', '#ffffff', '#777777', '#444444', '#ff4d4d', '#991111'];
+        let myChart = null; // Variable para destruir la gráfica vieja al filtrar
+
+        // Configuración por defecto: Últimos 7 días
+        window.onload = () => {
+            const hoy = new Date();
+            const haceUnaSemana = new Date();
+            haceUnaSemana.setDate(hoy.getDate() - 7);
+
+            document.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
+            document.getElementById('fechaInicio').value = haceUnaSemana.toISOString().split('T')[0];
+            
+            cargarDashboard();
+        };
+
+        function aplicarFiltros() {
+            cargarDashboard();
+        }
 
         async function cargarDashboard() {
-            // 1. SEGURIDAD: Comprobar si es un administrador válido
+            // 1. SEGURIDAD
             const { data: { session } } = await clienteSupabase.auth.getSession();
-            
-            if (!session) {
-                document.getElementById('pantallaBloqueo').innerHTML = "<h1>Error 403</h1><p>Debes iniciar sesión primero.</p>";
-                return;
-            }
+            if (!session) { document.getElementById('pantallaBloqueo').innerHTML = "<h1>Error</h1><p>Debes iniciar sesión.</p>"; return; }
 
             const { data: admins } = await clienteSupabase.from('admins').select('*').eq('email', session.user.email);
-            
             if (!admins || admins.length === 0) {
-                document.getElementById('pantallaBloqueo').innerHTML = "<h1>Acceso Denegado</h1><p>Tu correo no está en la lista blanca de administradores.</p>";
-                return;
+                document.getElementById('pantallaBloqueo').innerHTML = "<h1>Denegado</h1><p>No eres administrador.</p>"; return;
             }
 
-            // Si pasa la seguridad, revelamos el panel
             document.getElementById('pantallaBloqueo').style.display = 'none';
             document.getElementById('dashboardPrincipal').style.display = 'block';
-            document.getElementById('txtUsuario').innerText = `Conectado como: ${session.user.email}`;
 
-            // 2. EXTRAER DATOS DE ANALÍTICAS
-            const { data: analiticas, error } = await clienteSupabase.from('analiticas').select('*');
+            // 2. EXTRAER FECHAS DEL FILTRO
+            const fInicio = document.getElementById('fechaInicio').value;
+            const fFin = document.getElementById('fechaFin').value;
+
+            // 3. CONSULTAR A SUPABASE CON FILTROS
+            let query = clienteSupabase.from('analiticas').select('*');
+            if (fInicio) query = query.gte('created_at', fInicio + 'T00:00:00');
+            if (fFin) query = query.lte('created_at', fFin + 'T23:59:59');
+
+            const { data: analiticas, error } = await query;
             if (error) { console.error(error); return; }
 
-            // 3. PROCESAR LAS MATEMÁTICAS (Contadores)
+            // 4. MATEMÁTICAS Y PROCESAMIENTO
             let totalVistas = 0;
-            let totalLogins = 0;
             const conteoPaginas = {};
             const conteoNavegadores = {};
+            const conteoPaises = {};
+            const conteoFechas = {}; // Para la gráfica de líneas
 
-            analiticas.forEach(registro => {
-                if (registro.event_type === 'page_view') {
+            analiticas.forEach(reg => {
+                if (reg.event_type === 'page_view') {
                     totalVistas++;
-                    // Filtramos nombres para que se vea limpio
-                    let nombrePagina = registro.page_url.replace('.html', '').toUpperCase();
-                    conteoPaginas[nombrePagina] = (conteoPaginas[nombrePagina] || 0) + 1;
                     
-                    if(registro.browser) {
-                        conteoNavegadores[registro.browser] = (conteoNavegadores[registro.browser] || 0) + 1;
-                    }
+                    // Extraer solo la fecha (YYYY-MM-DD)
+                    const dia = reg.created_at.split('T')[0];
+                    conteoFechas[dia] = (conteoFechas[dia] || 0) + 1;
+
+                    let pag = reg.page_url.replace('.html', '').toUpperCase();
+                    conteoPaginas[pag] = (conteoPaginas[pag] || 0) + 1;
+                    
+                    let nav = reg.browser || 'Desconocido';
+                    conteoNavegadores[nav] = (conteoNavegadores[nav] || 0) + 1;
+
+                    let pais = reg.country || 'Guatemala';
+                    conteoPaises[pais] = (conteoPaises[pais] || 0) + 1;
                 }
-                // Si tuviéramos un evento de login explícito, lo sumaríamos. Por ahora contamos usuarios únicos
             });
 
-            // Llenar estadísticas superiores
+            // Llenar Cajas Rápidas
             document.getElementById('totalVisitas').innerText = totalVistas;
             
-            // Calcular página más popular
-            let maxVistas = 0;
-            let pagGanadora = "-";
-            for (let pag in conteoPaginas) {
-                if (conteoPaginas[pag] > maxVistas) {
-                    maxVistas = conteoPaginas[pag];
-                    pagGanadora = pag;
-                }
+            let maxVistas = 0, pagGanadora = "-";
+            for (let p in conteoPaginas) {
+                if (conteoPaginas[p] > maxVistas) { maxVistas = conteoPaginas[p]; pagGanadora = p; }
             }
             document.getElementById('topPage').innerText = pagGanadora;
 
-            // Calcular usuarios únicos (como una forma de logins)
             const usuariosUnicos = new Set(analiticas.map(a => a.user_email).filter(e => e !== 'anonimo'));
             document.getElementById('totalLogins').innerText = usuariosUnicos.size;
 
-            // 4. RENDERIZAR GRÁFICA DE BARRAS (Páginas)
-            Chart.defaults.color = '#ffffff'; // Textos de gráficas en blanco
+            // 5. RENDERIZAR GRÁFICA DE LÍNEAS
+            Chart.defaults.color = '#aaaaaa';
+            const ctx = document.getElementById('graficaTiempo').getContext('2d');
             
-            const ctxPaginas = document.getElementById('graficaPaginas').getContext('2d');
-            new Chart(ctxPaginas, {
-                type: 'bar',
+            if (myChart) myChart.destroy(); // Destruimos la anterior si existe
+            
+            // Ordenamos las fechas cronológicamente
+            const fechasOrdenadas = Object.keys(conteoFechas).sort();
+            const valoresFechas = fechasOrdenadas.map(f => conteoFechas[f]);
+
+            myChart = new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: Object.keys(conteoPaginas),
+                    labels: fechasOrdenadas,
                     datasets: [{
-                        label: 'Número de Visitas',
-                        data: Object.values(conteoPaginas),
-                        backgroundColor: '#b91d1d', // Rojo Arjona
-                        borderRadius: 4
+                        label: 'Visitas',
+                        data: valoresFechas,
+                        borderColor: '#b91d1d',
+                        backgroundColor: 'rgba(185, 29, 29, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3, // Hace la curva suave
+                        pointBackgroundColor: '#ffffff'
                     }]
                 },
                 options: {
@@ -239,37 +359,47 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: '#555555' } },
+                        y: { beginAtZero: true, grid: { color: '#333333' } },
                         x: { grid: { display: false } }
                     }
                 }
             });
 
-            // 5. RENDERIZAR GRÁFICA DE DONA (Navegadores)
-            const ctxNavegadores = document.getElementById('graficaNavegadores').getContext('2d');
-            new Chart(ctxNavegadores, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(conteoNavegadores),
-                    datasets: [{
-                        data: Object.values(conteoNavegadores),
-                        backgroundColor: coloresArjona,
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { color: '#ffffff' } }
-                    }
-                }
-            });
+            // 6. RENDERIZAR LISTAS HORIZONTALES (Estilo Vercel/Analytics)
+            renderListaHTML('listaPaginas', conteoPaginas);
+            renderListaHTML('listaNavegadores', conteoNavegadores);
+            renderListaHTML('listaPaises', conteoPaises);
         }
 
-        // Ejecutar el motor al iniciar
-        cargarDashboard();
+        // Función ayudante para crear el diseño de barras
+        function renderListaHTML(elementoId, datosObjeto) {
+            const contenedor = document.getElementById(elementoId);
+            contenedor.innerHTML = ''; // Limpiamos
+
+            // Ordenar de mayor a menor
+            const arrayDatos = Object.entries(datosObjeto).sort((a, b) => b[1] - a[1]);
+            
+            // Sacar el valor más alto para calcular el porcentaje de la barra (100%)
+            const maxValor = arrayDatos.length > 0 ? arrayDatos[0][1] : 1;
+
+            arrayDatos.forEach(item => {
+                const nombre = item[0];
+                const cantidad = item[1];
+                const porcentaje = (cantidad / maxValor) * 100;
+
+                contenedor.innerHTML += `
+                    <div class="lista-item">
+                        <div class="lista-barra-fondo" style="width: ${porcentaje}%;"></div>
+                        <span class="lista-texto">${nombre}</span>
+                        <span class="lista-valor">${cantidad}</span>
+                    </div>
+                `;
+            });
+
+            if (arrayDatos.length === 0) {
+                contenedor.innerHTML = '<p style="color:#666; font-size:0.9rem;">No hay datos para esta fecha.</p>';
+            }
+        }
     </script>
 </body>
 </html>
