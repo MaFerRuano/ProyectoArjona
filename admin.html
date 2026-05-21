@@ -107,7 +107,6 @@
         }
         .btn-filtrar:hover { background-color: #e62424; }
 
-        /* Ahora son 4 columnas para incluir el Tiempo Promedio */
         .stats-rapidas {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -137,6 +136,7 @@
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #333;
+            margin-bottom: 30px;
         }
 
         .panel-grafica h3 {
@@ -201,7 +201,7 @@
 
     <div id="pantallaBloqueo">
         <h1>Acceso Restringido</h1>
-        <p>Verificando credenciales de administrador...</p>
+        <p id="msgCargando">Verificando credenciales de administrador...</p>
     </div>
 
     <div id="dashboardPrincipal">
@@ -294,178 +294,200 @@
         }
 
         async function cargarDashboard() {
-            const { data: { session } } = await clienteSupabase.auth.getSession();
-            if (!session) { document.getElementById('pantallaBloqueo').innerHTML = "<h1>Error</h1><p>Debes iniciar sesión.</p>"; return; }
+            try {
+                // 1. VALIDACIÓN DE SESIÓN EN SUPABASE
+                const { data: { session }, error: errorSesion } = await clienteSupabase.auth.getSession();
+                if (errorSesion) throw errorSesion;
 
-            const { data: admins } = await clienteSupabase.from('admins').select('*').eq('email', session.user.email);
-            if (!admins || admins.length === 0) {
-                document.getElementById('pantallaBloqueo').innerHTML = "<h1>Denegado</h1><p>No eres administrador.</p>"; return;
-            }
+                if (!session) { 
+                    document.getElementById('pantallaBloqueo').innerHTML = "<h1>Sesión Inactiva</h1><p>No se detectó un inicio de sesión activo. Por favor ingresa desde el login principal.</p>"; 
+                    return; 
+                }
 
-            document.getElementById('pantallaBloqueo').style.display = 'none';
-            document.getElementById('dashboardPrincipal').style.display = 'block';
+                const correo = session.user.email;
 
-            const correo = session.user.email;
-            const nombreTemporal = correo.split('@')[0];
-            document.getElementById('nombreAdmin').innerText = nombreTemporal;
+                // 2. VALIDACIÓN CONTRA LA TABLA DE ADMINISTRADORES
+                const { data: admins, error: errorAdmin } = await clienteSupabase.from('admins').select('*').eq('email', correo);
+                if (errorAdmin) throw errorAdmin;
 
-            const fInicio = document.getElementById('fechaInicio').value;
-            const fFin = document.getElementById('fechaFin').value;
+                if (!admins || admins.length === 0) {
+                    document.getElementById('pantallaBloqueo').innerHTML = `<h1>Acceso Denegado</h1><p>El correo <strong>${correo}</strong> no figura en la lista blanca de la tabla 'admins'.</p>`; 
+                    return;
+                }
 
-            // Filtro compatible con el formato crudo de Supabase
-            let query = clienteSupabase.from('analiticas').select('*');
-            if (fInicio) query = query.gte('created_at', `${fInicio} 00:00:00`);
-            if (fFin) query = query.lte('created_at', `${fFin} 23:59:59`);
+                // Si las dos pruebas pasan, liberamos el Dashboard
+                document.getElementById('pantallaBloqueo').style.display = 'none';
+                document.getElementById('dashboardPrincipal').style.display = 'block';
 
-            const { data: analiticas, error } = await query;
-            if (error) { console.error(error); return; }
+                // Mostrar el nombre en el h2
+                const nombreTemporal = correo.split('@')[0];
+                document.getElementById('nombreAdmin').innerText = nombreTemporal;
 
-            let totalVistas = 0;
-            const conteoPaginas = {};
-            const conteoNavegadores = {};
-            const conteoPaises = {};
-            const conteoFechas = {}; 
-            const conteoHoras = {}; 
-            const sesionesUsuario = {}; 
+                // 3. EXTRACCIÓN DE PARÁMETROS DE FECHAS
+                const fInicio = document.getElementById('fechaInicio').value;
+                const fFin = document.getElementById('fechaFin').value;
 
-            analiticas.forEach(reg => {
-                if (reg.event_type === 'page_view') {
-                    totalVistas++;
-                    
-                    // CORRECCIÓN: Extracción limpia de texto, sin pasar por la validación de Date de JS
-                    const diaTexto = reg.created_at.substring(0, 10); // Ej: 2026-05-21
-                    conteoFechas[diaTexto] = (conteoFechas[diaTexto] || 0) + 1;
+                let query = clienteSupabase.from('analiticas').select('*');
+                if (fInicio) query = query.gte('created_at', `${fInicio} 00:00:00`);
+                if (fFin) query = query.lte('created_at', `${fFin} 23:59:59`);
 
-                    // Extraemos la hora exacta (caracteres 11 y 12)
-                    const horaTexto = reg.created_at.substring(11, 13) + ":00"; // Ej: 00:00, 14:00
-                    conteoHoras[horaTexto] = (conteoHoras[horaTexto] || 0) + 1;
+                const { data: analiticas, error: errorAnaliticas } = await query;
+                if (errorAnaliticas) throw errorAnaliticas;
 
-                    let pag = reg.page_url.replace('.html', '').toUpperCase();
-                    conteoPaginas[pag] = (conteoPaginas[pag] || 0) + 1;
-                    
-                    let nav = reg.browser || 'Desconocido';
-                    conteoNavegadores[nav] = (conteoNavegadores[nav] || 0) + 1;
+                // 4. PROCESAMIENTO ESTADÍSTICO
+                let totalVistas = 0;
+                const conteoPaginas = {};
+                const conteoNavegadores = {};
+                const conteoPaises = {};
+                const conteoFechas = {}; 
+                const conteoHoras = {}; 
+                const sesionesUsuario = {}; 
 
-                    let pais = reg.country || 'Guatemala';
-                    conteoPaises[pais] = (conteoPaises[pais] || 0) + 1;
+                analiticas.forEach(reg => {
+                    if (reg.event_type === 'page_view') {
+                        totalVistas++;
+                        
+                        // Extracción de caracteres segura YYYY-MM-DD
+                        const diaTexto = reg.created_at.substring(0, 10); 
+                        conteoFechas[diaTexto] = (conteoFechas[diaTexto] || 0) + 1;
 
-                    // Agrupamos los tiempos para calcular la duración (Solo usuarios conocidos)
-                    if (reg.user_email !== 'anonimo') {
-                        if (!sesionesUsuario[reg.user_email]) sesionesUsuario[reg.user_email] = [];
-                        // Reemplazamos el espacio por una T solo para hacer la resta matemática en JS
-                        sesionesUsuario[reg.user_email].push(new Date(reg.created_at.replace(' ', 'T')).getTime());
+                        // Extracción de hora segura HH:00
+                        const horaTexto = reg.created_at.substring(11, 13) + ":00"; 
+                        conteoHoras[horaTexto] = (conteoHoras[horaTexto] || 0) + 1;
+
+                        let pag = reg.page_url.replace('.html', '').toUpperCase();
+                        conteoPaginas[pag] = (conteoPaginas[pag] || 0) + 1;
+                        
+                        let nav = reg.browser || 'Desconocido';
+                        conteoNavegadores[nav] = (conteoNavegadores[nav] || 0) + 1;
+
+                        let pais = reg.country || 'Guatemala';
+                        conteoPaises[pais] = (conteoPaises[pais] || 0) + 1;
+
+                        if (reg.user_email !== 'anonimo') {
+                            if (!sesionesUsuario[reg.user_email]) sesionesUsuario[reg.user_email] = [];
+                            sesionesUsuario[reg.user_email].push(new Date(reg.created_at.replace(' ', 'T')).getTime());
+                        }
+                    }
+                });
+
+                // Llenar Tarjetas Superiores
+                document.getElementById('totalVisitas').innerText = totalVistas;
+                
+                let maxVistas = 0, pagGanadora = "-";
+                for (let p in conteoPaginas) {
+                    if (conteoPaginas[p] > maxVistas) { maxVistas = conteoPaginas[p]; pagGanadora = p; }
+                }
+                document.getElementById('topPage').innerText = pagGanadora;
+
+                const usuariosUnicos = new Set(analiticas.map(a => a.user_email).filter(e => e !== 'anonimo'));
+                document.getElementById('totalLogins').innerText = usuariosUnicos.size;
+
+                // Duración promedio
+                let minutosTotales = 0;
+                let usuariosCalculados = 0;
+                for (let email in sesionesUsuario) {
+                    const tiempos = sesionesUsuario[email];
+                    if (tiempos.length > 1) {
+                        const diffMilisegundos = Math.max(...tiempos) - Math.min(...tiempos);
+                        minutosTotales += diffMilisegundos / (1000 * 60);
+                        usuariosCalculados++;
                     }
                 }
-            });
-
-            // Matemáticas de Cajas Rápidas
-            document.getElementById('totalVisitas').innerText = totalVistas;
-            
-            let maxVistas = 0, pagGanadora = "-";
-            for (let p in conteoPaginas) {
-                if (conteoPaginas[p] > maxVistas) { maxVistas = conteoPaginas[p]; pagGanadora = p; }
-            }
-            document.getElementById('topPage').innerText = pagGanadora;
-
-            const usuariosUnicos = new Set(analiticas.map(a => a.user_email).filter(e => e !== 'anonimo'));
-            document.getElementById('totalLogins').innerText = usuariosUnicos.size;
-
-            // Calcular Tiempo Promedio
-            let minutosTotales = 0;
-            let usuariosCalculados = 0;
-            for (let email en sesionesUsuario) {
-                const tiempos = sesionesUsuario[email];
-                if (tiempos.length > 1) {
-                    const diffMilisegundos = Math.max(...tiempos) - Math.min(...tiempos);
-                    minutosTotales += diffMilisegundos / (1000 * 60);
-                    usuariosCalculados++;
+                const promedioBruto = usuariosCalculados > 0 ? (minutosTotales / usuariosCalculados) : 0;
+                const mins = Math.floor(promedioBruto);
+                const secs = Math.floor((promedioBruto - mins) * 60);
+                
+                if (mins === 0 && secs === 0 && totalVistas > 0) {
+                    document.getElementById('tiempoPromedio').innerText = "< 1m";
+                } else {
+                    document.getElementById('tiempoPromedio').innerText = `${mins}m ${secs}s`;
                 }
-            }
-            const promedioBruto = usuariosCalculados > 0 ? (minutosTotales / usuariosCalculados) : 0;
-            const mins = Math.floor(promedioBruto);
-            const secs = Math.floor((promedioBruto - mins) * 60);
-            
-            // Si nadie se quedó más de un minuto, mostramos "Menos de 1m"
-            if (mins === 0 && secs === 0 && totalVistas > 0) {
-                document.getElementById('tiempoPromedio').innerText = "< 1m";
-            } else {
-                document.getElementById('tiempoPromedio').innerText = `${mins}m ${secs}s`;
-            }
 
-            // RENDERIZAR GRÁFICA DE DÍAS (Línea)
-            Chart.defaults.color = '#aaaaaa';
-            const ctxDias = document.getElementById('graficaTiempo').getContext('2d');
-            if (myChartDias) myChartDias.destroy(); 
-            
-            const fechasOrdenadas = Object.keys(conteoFechas).sort();
-            const valoresFechas = fechasOrdenadas.map(f => conteoFechas[f]);
+                // 5. GRÁFICA DE LÍNEAS (DÍAS)
+                Chart.defaults.color = '#aaaaaa';
+                const ctxDias = document.getElementById('graficaTiempo').getContext('2d');
+                if (myChartDias) myChartDias.destroy(); 
+                
+                const fechasOrdenadas = Object.keys(conteoFechas).sort();
+                const valoresFechas = fechasOrdenadas.map(f => conteoFechas[f]);
 
-            myChartDias = new Chart(ctxDias, {
-                type: 'line',
-                data: {
-                    labels: fechasOrdenadas,
-                    datasets: [{
-                        label: 'Visitas',
-                        data: valoresFechas,
-                        borderColor: '#b91d1d',
-                        backgroundColor: 'rgba(185, 29, 29, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.3, 
-                        pointBackgroundColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (c) => ` ${c.raw} visitas` } }
+                myChartDias = new Chart(ctxDias, {
+                    type: 'line',
+                    data: {
+                        labels: fechasOrdenadas,
+                        datasets: [{
+                            label: 'Visitas',
+                            data: valoresFechas,
+                            borderColor: '#b91d1d',
+                            backgroundColor: 'rgba(185, 29, 29, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3, 
+                            pointBackgroundColor: '#ffffff'
+                        }]
                     },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { stepSize: 1 } },
-                        x: { grid: { display: false } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: (c) => ` ${c.raw} visitas` } }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { stepSize: 1 } },
+                            x: { grid: { display: false } }
+                        }
                     }
-                }
-            });
+                });
 
-            // RENDERIZAR GRÁFICA DE HORAS (Barras)
-            const ctxHoras = document.getElementById('graficaHoras').getContext('2d');
-            if (myChartHoras) myChartHoras.destroy(); 
-            
-            // Ordenar las horas desde las 00:00 hasta las 23:00
-            const horasOrdenadas = Object.keys(conteoHoras).sort();
-            const valoresHoras = horasOrdenadas.map(h => conteoHoras[h]);
+                // 6. GRÁFICA DE BARRAS (HORAS PICO)
+                const ctxHoras = document.getElementById('graficaHoras').getContext('2d');
+                if (myChartHoras) myChartHoras.destroy(); 
+                
+                const horasOrdenadas = Object.keys(conteoHoras).sort();
+                const valoresHoras = horasOrdenadas.map(h => conteoHoras[h]);
 
-            myChartHoras = new Chart(ctxHoras, {
-                type: 'bar',
-                data: {
-                    labels: horasOrdenadas,
-                    datasets: [{
-                        label: 'Visitas',
-                        data: valoresHoras,
-                        backgroundColor: '#b91d1d',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (c) => ` ${c.raw} visitas` } }
+                myChartHoras = new Chart(ctxHoras, {
+                    type: 'bar',
+                    data: {
+                        labels: horasOrdenadas,
+                        datasets: [{
+                            label: 'Visitas',
+                            data: valoresHoras,
+                            backgroundColor: '#b91d1d',
+                            borderRadius: 4
+                        }]
                     },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { stepSize: 1 } },
-                        x: { grid: { display: false } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: (c) => ` ${c.raw} visitas` } }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { stepSize: 1 } },
+                            x: { grid: { display: false } }
+                        }
                     }
-                }
-            });
+                });
 
-            // Listas
-            renderListaHTML('listaPaginas', conteoPaginas);
-            renderListaHTML('listaNavegadores', conteoNavegadores);
-            renderListaHTML('listaPaises', conteoPaises);
+                // Render de listas horizontales
+                renderListaHTML('listaPaginas', conteoPaginas);
+                renderListaHTML('listaNavegadores', conteoNavegadores);
+                renderListaHTML('listaPaises', conteoPaises);
+
+            } catch (err) {
+                console.error("Error crítico detectado en el dashboard:", err);
+                // Si hay un fallo de base de datos o sintaxis, se inyectará aquí de inmediato
+                document.getElementById('pantallaBloqueo').innerHTML = `
+                    <h1 style="color: #b91d1d;">Error de Validación</h1>
+                    <p>Ocurrió un problema técnico al conectar con Supabase:</p>
+                    <code style="background:#000; padding:10px; color:#ff4d4d; border-radius:4px; display:inline-block; margin-top:10px;">${err.message || err}</code>
+                    <p style="font-size:0.9rem; color:#888; margin-top:20px;">Verifica que las tablas 'admins' y 'analiticas' existan con los nombres de columnas correctos.</p>
+                `;
+            }
         }
 
         function renderListaHTML(elementoId, datosObjeto) {
