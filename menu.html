@@ -11,18 +11,14 @@
         }
 
         body {
-            /* Manteniendo el codigo CSS */
             background-color: #1a1a1a !important; 
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100px; /* Ajustado al tamaño de la fila en el index */
+            height: 100px;
             overflow: hidden;
-            /* Misma fuente que las otras paginas */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Linea roja inferior para conectar con el diseño de las paginas */
             border-bottom: 5px solid #b91d1d; 
-            /* NOTA: Relative para anclar el botón de usuario a la derecha sin arruinar mi centrado */
             position: relative;
         }
 
@@ -34,7 +30,7 @@
 
         a {
             text-decoration: none;
-            color: #ffffff; /* Texto blanco sobre fondo oscuro */
+            color: #ffffff; 
             font-weight: bold;
             font-size: 0.9rem;
             text-transform: uppercase;
@@ -45,21 +41,18 @@
             border: 1px solid transparent;
         }
 
-        /* Efecto hover: se pone rojo */
         a:hover {
             color: #ffffff;
             background-color: #b91d1d;
             transform: scale(1.05);
         }
 
-        /* Clase activa: resalta en que pagina se esta */
         a.active {
             background-color: #b91d1d !important;
             color: #ffffff !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* NOTA: Estilos del menú de usuario a la derecha */
         .user-menu-container {
             position: absolute;
             right: 40px;
@@ -79,10 +72,9 @@
         }
 
         .vector-avatar-btn:hover svg path {
-            fill: #ffffff; /* Se pone blanco al pasar el mouse */
+            fill: #ffffff; 
         }
 
-        /* NOTA: El recuadro flotante para cerrar sesión */
         .dropdown-box {
             display: none;
             position: absolute;
@@ -165,11 +157,12 @@
         }
 
         async function logout() {
+            // 1. Matamos la sesión en Supabase de forma segura
             await clienteSupabase.auth.signOut();
-            localStorage.clear();
-            sessionStorage.clear();
-            // Redirección con el parámetro de salida para activar el overlay translúcido
-            window.top.location.href = 'https://maferruano.github.io/Proyecto_ISDC/index.html?logout=true';
+            
+            // 2. Redirigimos a la raíz pero inyectando la hora actual exacta al final de la URL
+            // Esto le avisa al navegador que debe descargar la página nueva 100% fresca y sin cachés trabados.
+            window.top.location.href = 'https://maferruano.github.io/Proyecto_ISDC/?reload=' + new Date().getTime();
         }
     </script>
 </body>
