@@ -128,6 +128,7 @@
             </svg>
         </button>
         <div id="dropdownMenu" class="dropdown-box">
+            <button id="btnAdminPanel" style="display: none;" onclick="abrirPanelAdmin()">Admin Analíticas</button>
             <button onclick="logout()">Cerrar Sesión</button>
         </div>
     </div>
@@ -138,47 +139,57 @@
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         /* ==========================================
-           NUEVO MOTOR DE ANALÍTICAS EN SEGUNDO PLANO
+           1. VALIDACIÓN DE ADMIN Y ANALÍTICAS
            ========================================== */
-        async function registrarAnalitica(paginaVisitada, tipo = 'page_view') {
-            try {
-                // 1. Averiguamos quién es el usuario
-                const { data: { session } } = await clienteSupabase.auth.getSession();
-                const correoUsuario = session ? session.user.email : 'anonimo';
-                
-                // 2. Averiguamos su navegador
-                let navegadorInfo = "Otro";
-                const ua = navigator.userAgent;
-                if (ua.includes("Edg")) navegadorInfo = "Edge";
-                else if (ua.includes("Chrome")) navegadorInfo = "Chrome";
-                else if (ua.includes("Firefox")) navegadorInfo = "Firefox";
-                else if (ua.includes("Safari") && !ua.includes("Chrome")) navegadorInfo = "Safari";
+        async function inicializarMenu() {
+            const { data: { session } } = await clienteSupabase.auth.getSession();
+            const correoUsuario = session ? session.user.email : 'anonimo';
 
-                // 3. Enviamos los datos a la tabla silenciosamente
+            // Verificamos si es administrador
+            if (session) {
+                const { data: admins } = await clienteSupabase.from('admins').select('*').eq('email', correoUsuario);
+                if (admins && admins.length > 0) {
+                    // Si lo encuentra en la base de datos, mostramos el botón
+                    document.getElementById('btnAdminPanel').style.display = 'block';
+                }
+            }
+
+            // Registramos la visita inicial
+            let navegadorInfo = "Otro";
+            const ua = navigator.userAgent;
+            if (ua.includes("Edg")) navegadorInfo = "Edge";
+            else if (ua.includes("Chrome")) navegadorInfo = "Chrome";
+            else if (ua.includes("Firefox")) navegadorInfo = "Firefox";
+            else if (ua.includes("Safari") && !ua.includes("Chrome")) navegadorInfo = "Safari";
+
+            try {
                 await clienteSupabase.from('analiticas').insert([{
-                    page_url: paginaVisitada,
-                    event_type: tipo,
+                    page_url: 'introduccion.html',
+                    event_type: 'page_view',
                     user_email: correoUsuario,
                     browser: navegadorInfo
                 }]);
-            } catch (error) {
-                console.log("No se pudo registrar la analítica (ignorar si bloqueado):", error);
-            }
+            } catch (e) {}
         }
 
-        // Apenas carga el menú por primera vez, registramos que vieron la introducción
-        registrarAnalitica('introduccion.html', 'page_view');
+        // Ejecutamos la validación en cuanto carga el menú
+        inicializarMenu();
 
         /* ==========================================
-           FUNCIONES NORMALES DEL MENÚ
+           2. FUNCIONES DEL MENÚ Y NAVEGACIÓN
            ========================================== */
         function setActive(element) {
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
             
-            // Cuando dan clic, extraemos el enlace y lo mandamos a analíticas
             const rutaDestino = element.getAttribute('href');
-            registrarAnalitica(rutaDestino, 'page_view');
+            clienteSupabase.auth.getSession().then(({ data: { session } }) => {
+                clienteSupabase.from('analiticas').insert([{
+                    page_url: rutaDestino,
+                    event_type: 'page_view',
+                    user_email: session ? session.user.email : 'anonimo'
+                }]).then();
+            });
         }
 
         function toggleMenu(event) {
@@ -195,15 +206,26 @@
             }
         }
 
-        async function logout() {
-            // Registramos que el usuario cerró sesión en las analíticas
-            await registrarAnalitica('menu_superior', 'logout');
+        // Función para abrir la página del admin en el marco de abajo
+        function abrirPanelAdmin() {
+            // Le quitamos el rojo a los demás botones porque estamos en una página especial
+            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+            
+            // Abrimos admin.html en el iframe llamado "contenido"
+            window.open('admin.html', 'contenido');
+            document.getElementById("dropdownMenu").classList.remove('show');
+        }
 
+        async function logout() {
+            const { data: { session } } = await clienteSupabase.auth.getSession();
+            if (session) {
+                await clienteSupabase.from('analiticas').insert([{
+                    page_url: 'menu_superior', event_type: 'logout', user_email: session.user.email
+                }]);
+            }
             await clienteSupabase.auth.signOut();
             localStorage.clear();
             sessionStorage.clear();
-            
-            // Recargamos forzosamente la raíz para levantar el pop-up de login
             window.top.location.reload();
         }
     </script>
