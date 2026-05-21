@@ -16,7 +16,8 @@
             justify-content: center;
             align-items: center;
             height: 100px; 
-            overflow: hidden;
+            /* Se cambia a visible por precaución, aunque el nuevo menú no lo necesita */
+            overflow: visible; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-bottom: 5px solid #b91d1d; 
             position: relative;
@@ -56,6 +57,8 @@
         .user-menu-container {
             position: absolute;
             right: 40px;
+            display: flex;
+            align-items: center;
         }
 
         .vector-avatar-btn {
@@ -75,35 +78,46 @@
             fill: #ffffff; 
         }
 
+        /* ==============================================
+           NUEVO MENÚ HORIZONTAL QUE SE ABRE A LA IZQUIERDA
+           ============================================== */
         .dropdown-box {
             display: none;
             position: absolute;
-            right: 0;
-            top: 50px;
+            right: 100%; /* Empuja el menú a la izquierda del avatar */
+            margin-right: 15px; /* Crea un espacio entre los botones y el avatar */
+            top: 50%;
+            transform: translateY(-50%); /* Lo centra verticalmente de forma perfecta */
             background-color: #3d3d3d;
-            min-width: 150px;
             box-shadow: 0px 8px 16px rgba(0,0,0,0.5);
             border-radius: 4px;
-            border-top: 3px solid #b91d1d;
+            border-bottom: 3px solid #b91d1d;
             z-index: 99999;
+            white-space: nowrap; /* Evita que los textos se partan en dos líneas */
         }
 
         .dropdown-box.show {
-            display: block;
+            display: flex; /* Muestra los botones en fila (horizontal) */
+            flex-direction: row;
         }
 
         .dropdown-box button {
             color: #ffffff;
             background: none;
             border: none;
-            padding: 14px 16px;
-            width: 100%;
-            text-align: left;
+            border-right: 1px solid #555555; /* Línea divisoria gris entre los botones */
+            padding: 12px 20px;
+            text-align: center;
             font-weight: bold;
             font-size: 0.85rem;
             text-transform: uppercase;
             cursor: pointer;
             font-family: inherit;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-box button:last-child {
+            border-right: none; /* Le quita la línea divisoria al último botón */
         }
 
         .dropdown-box button:hover {
@@ -122,15 +136,16 @@
     </ul>
 
     <div class="user-menu-container">
+        <div id="dropdownMenu" class="dropdown-box">
+            <button id="btnAdminPanel" style="display: none;" onclick="abrirPanelAdmin()">Admin Analíticas</button>
+            <button onclick="logout()">Cerrar Sesión</button>
+        </div>
+        
         <button class="vector-avatar-btn" onclick="toggleMenu(event)">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="#b91d1d"/>
             </svg>
         </button>
-        <div id="dropdownMenu" class="dropdown-box">
-            <button id="btnAdminPanel" style="display: none;" onclick="abrirPanelAdmin()">Admin Analíticas</button>
-            <button onclick="logout()">Cerrar Sesión</button>
-        </div>
     </div>
 
     <script>
@@ -138,18 +153,14 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        /* ==========================================
-           1. VALIDACIÓN DE ADMIN Y ANALÍTICAS
-           ========================================== */
         async function inicializarMenu() {
             const { data: { session } } = await clienteSupabase.auth.getSession();
             const correoUsuario = session ? session.user.email : 'anonimo';
 
-            // Verificamos si es administrador
+            // Verificamos si es administrador para mostrar el botón
             if (session) {
                 const { data: admins } = await clienteSupabase.from('admins').select('*').eq('email', correoUsuario);
                 if (admins && admins.length > 0) {
-                    // Si lo encuentra en la base de datos, mostramos el botón
                     document.getElementById('btnAdminPanel').style.display = 'block';
                 }
             }
@@ -160,74 +171,4 @@
             if (ua.includes("Edg")) navegadorInfo = "Edge";
             else if (ua.includes("Chrome")) navegadorInfo = "Chrome";
             else if (ua.includes("Firefox")) navegadorInfo = "Firefox";
-            else if (ua.includes("Safari") && !ua.includes("Chrome")) navegadorInfo = "Safari";
-
-            try {
-                await clienteSupabase.from('analiticas').insert([{
-                    page_url: 'introduccion.html',
-                    event_type: 'page_view',
-                    user_email: correoUsuario,
-                    browser: navegadorInfo
-                }]);
-            } catch (e) {}
-        }
-
-        // Ejecutamos la validación en cuanto carga el menú
-        inicializarMenu();
-
-        /* ==========================================
-           2. FUNCIONES DEL MENÚ Y NAVEGACIÓN
-           ========================================== */
-        function setActive(element) {
-            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
-            element.classList.add('active');
-            
-            const rutaDestino = element.getAttribute('href');
-            clienteSupabase.auth.getSession().then(({ data: { session } }) => {
-                clienteSupabase.from('analiticas').insert([{
-                    page_url: rutaDestino,
-                    event_type: 'page_view',
-                    user_email: session ? session.user.email : 'anonimo'
-                }]).then();
-            });
-        }
-
-        function toggleMenu(event) {
-            event.stopPropagation();
-            document.getElementById("dropdownMenu").classList.toggle("show");
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.closest('.vector-avatar-btn')) {
-                var dropdown = document.getElementById("dropdownMenu");
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            }
-        }
-
-        // Función para abrir la página del admin en el marco de abajo
-        function abrirPanelAdmin() {
-            // Le quitamos el rojo a los demás botones porque estamos en una página especial
-            document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
-            
-            // Abrimos admin.html en el iframe llamado "contenido"
-            window.open('admin.html', 'contenido');
-            document.getElementById("dropdownMenu").classList.remove('show');
-        }
-
-        async function logout() {
-            const { data: { session } } = await clienteSupabase.auth.getSession();
-            if (session) {
-                await clienteSupabase.from('analiticas').insert([{
-                    page_url: 'menu_superior', event_type: 'logout', user_email: session.user.email
-                }]);
-            }
-            await clienteSupabase.auth.signOut();
-            localStorage.clear();
-            sessionStorage.clear();
-            window.top.location.reload();
-        }
-    </script>
-</body>
-</html>
+            else if (ua.includes("Safari") && !ua.includes
