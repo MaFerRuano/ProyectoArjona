@@ -165,14 +165,10 @@
         }
 
         async function logout() {
-            // 1. Cerramos sesión
             await clienteSupabase.auth.signOut();
-            
-            // 2. Limpiamos memorias
             localStorage.clear();
             sessionStorage.clear();
-            
-            // 3. Forzamos la redirección con el parámetro definitivo de salida
+            // Redirección con el parámetro de salida para activar el overlay translúcido
             window.top.location.href = 'https://maferruano.github.io/Proyecto_ISDC/index.html?logout=true';
         }
     </script>
