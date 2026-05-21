@@ -15,7 +15,6 @@
             padding: 30px 40px;
         }
 
-        /* PANTALLA DE BLOQUEO */
         #pantallaBloqueo {
             display: flex;
             flex-direction: column;
@@ -31,30 +30,42 @@
             text-transform: uppercase;
         }
 
-        /* CONTENEDOR DEL DASHBOARD */
         #dashboardPrincipal {
             display: none;
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* ENCABEZADO Y FILTROS */
+        /* HEADER MODIFICADO CON LA BIENVENIDA */
         .header-dashboard {
             border-bottom: 2px solid #3d3d3d;
             padding-bottom: 20px;
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end; /* Alinea los elementos abajo */
             flex-wrap: wrap;
             gap: 20px;
         }
 
-        .header-dashboard h1 {
+        .titulos-header h1 {
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin: 0;
+            margin: 0 0 5px 0;
             font-size: 1.8rem;
+        }
+
+        .titulos-header h2 {
+            margin: 0;
+            font-size: 1rem;
+            color: #aaaaaa;
+            font-weight: normal;
+        }
+
+        .titulos-header h2 span {
+            color: #b91d1d;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         .controles-fecha {
@@ -80,7 +91,7 @@
             border: 1px solid #444;
             padding: 8px 10px;
             border-radius: 4px;
-            color-scheme: dark; /* Hace que el calendario nativo sea oscuro */
+            color-scheme: dark;
             font-family: inherit;
         }
 
@@ -97,7 +108,6 @@
         }
         .btn-filtrar:hover { background-color: #e62424; }
 
-        /* ESTADÍSTICAS RÁPIDAS */
         .stats-rapidas {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -115,7 +125,6 @@
         .stat-caja h4 { margin: 0; color: #888888; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;}
         .stat-caja p { margin: 10px 0 0 0; font-size: 2.2rem; font-weight: bold; color: #ffffff; }
 
-        /* SECCIÓN DE GRÁFICAS Y LISTAS */
         .panel-grafica {
             background-color: #242424;
             padding: 20px;
@@ -144,7 +153,6 @@
             gap: 20px;
         }
 
-        /* ESTILO DE BARRAS HORIZONTALES (Como tu imagen) */
         .lista-contenedor {
             display: flex;
             flex-direction: column;
@@ -165,22 +173,19 @@
         .lista-barra-fondo {
             position: absolute;
             top: 0; left: 0; height: 100%;
-            background-color: rgba(185, 29, 29, 0.2); /* Rojo semi-transparente */
-            border-left: 3px solid #b91d1d; /* Borde rojo sólido */
+            background-color: rgba(185, 29, 29, 0.2); 
+            border-left: 3px solid #b91d1d; 
             z-index: 1;
             transition: width 0.5s ease;
         }
 
-        .lista-texto {
+        .lista-texto, .lista-valor {
             position: relative;
             z-index: 2;
             font-size: 0.9rem;
-            font-weight: 500;
         }
         
         .lista-valor {
-            position: relative;
-            z-index: 2;
             font-weight: bold;
         }
     </style>
@@ -194,7 +199,10 @@
 
     <div id="dashboardPrincipal">
         <div class="header-dashboard">
-            <h1>Analíticas - Proyecto Arjona</h1>
+            <div class="titulos-header">
+                <h1>Analíticas - Proyecto Arjona</h1>
+                <h2>Bienvenida, <span id="nombreAdmin">...</span></h2>
+            </div>
             
             <div class="controles-fecha">
                 <label>Desde:</label>
@@ -248,16 +256,15 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let myChart = null; // Variable para destruir la gráfica vieja al filtrar
+        let myChart = null; 
 
-        // Configuración por defecto: Últimos 7 días
         window.onload = () => {
             const hoy = new Date();
             const haceUnaSemana = new Date();
             haceUnaSemana.setDate(hoy.getDate() - 7);
 
-            document.getElementById('fechaFin').value = hoy.toISOString().split('T')[0];
-            document.getElementById('fechaInicio').value = haceUnaSemana.toISOString().split('T')[0];
+            document.getElementById('fechaFin').value = hoy.toISOString().substring(0, 10);
+            document.getElementById('fechaInicio').value = haceUnaSemana.toISOString().substring(0, 10);
             
             cargarDashboard();
         };
@@ -267,7 +274,6 @@
         }
 
         async function cargarDashboard() {
-            // 1. SEGURIDAD
             const { data: { session } } = await clienteSupabase.auth.getSession();
             if (!session) { document.getElementById('pantallaBloqueo').innerHTML = "<h1>Error</h1><p>Debes iniciar sesión.</p>"; return; }
 
@@ -279,31 +285,35 @@
             document.getElementById('pantallaBloqueo').style.display = 'none';
             document.getElementById('dashboardPrincipal').style.display = 'block';
 
-            // 2. EXTRAER FECHAS DEL FILTRO
+            // ESTABLECER EL NOMBRE DE BIENVENIDA
+            const correo = session.user.email;
+            const nombreTemporal = correo.split('@')[0]; // Corta todo después del @
+            document.getElementById('nombreAdmin').innerText = nombreTemporal;
+
+            // FILTROS
             const fInicio = document.getElementById('fechaInicio').value;
             const fFin = document.getElementById('fechaFin').value;
 
-            // 3. CONSULTAR A SUPABASE CON FILTROS
+            // Para evitar errores de formato en Supabase, agregamos espacios en lugar de "T"
             let query = clienteSupabase.from('analiticas').select('*');
-            if (fInicio) query = query.gte('created_at', fInicio + 'T00:00:00');
-            if (fFin) query = query.lte('created_at', fFin + 'T23:59:59');
+            if (fInicio) query = query.gte('created_at', `${fInicio} 00:00:00`);
+            if (fFin) query = query.lte('created_at', `${fFin} 23:59:59`);
 
             const { data: analiticas, error } = await query;
             if (error) { console.error(error); return; }
 
-            // 4. MATEMÁTICAS Y PROCESAMIENTO
             let totalVistas = 0;
             const conteoPaginas = {};
             const conteoNavegadores = {};
             const conteoPaises = {};
-            const conteoFechas = {}; // Para la gráfica de líneas
+            const conteoFechas = {}; 
 
             analiticas.forEach(reg => {
                 if (reg.event_type === 'page_view') {
                     totalVistas++;
                     
-                    // Extraer solo la fecha (YYYY-MM-DD)
-                    const dia = reg.created_at.split('T')[0];
+                    // CORRECCIÓN INFALIBLE DE FECHA: Toma estrictamente los primeros 10 caracteres (YYYY-MM-DD)
+                    const dia = reg.created_at.substring(0, 10);
                     conteoFechas[dia] = (conteoFechas[dia] || 0) + 1;
 
                     let pag = reg.page_url.replace('.html', '').toUpperCase();
@@ -317,7 +327,6 @@
                 }
             });
 
-            // Llenar Cajas Rápidas
             document.getElementById('totalVisitas').innerText = totalVistas;
             
             let maxVistas = 0, pagGanadora = "-";
@@ -329,13 +338,11 @@
             const usuariosUnicos = new Set(analiticas.map(a => a.user_email).filter(e => e !== 'anonimo'));
             document.getElementById('totalLogins').innerText = usuariosUnicos.size;
 
-            // 5. RENDERIZAR GRÁFICA DE LÍNEAS
             Chart.defaults.color = '#aaaaaa';
             const ctx = document.getElementById('graficaTiempo').getContext('2d');
             
-            if (myChart) myChart.destroy(); // Destruimos la anterior si existe
+            if (myChart) myChart.destroy(); 
             
-            // Ordenamos las fechas cronológicamente
             const fechasOrdenadas = Object.keys(conteoFechas).sort();
             const valoresFechas = fechasOrdenadas.map(f => conteoFechas[f]);
 
@@ -350,7 +357,7 @@
                         backgroundColor: 'rgba(185, 29, 29, 0.1)',
                         borderWidth: 2,
                         fill: true,
-                        tension: 0.3, // Hace la curva suave
+                        tension: 0.3, 
                         pointBackgroundColor: '#ffffff'
                     }]
                 },
@@ -365,21 +372,16 @@
                 }
             });
 
-            // 6. RENDERIZAR LISTAS HORIZONTALES (Estilo Vercel/Analytics)
             renderListaHTML('listaPaginas', conteoPaginas);
             renderListaHTML('listaNavegadores', conteoNavegadores);
             renderListaHTML('listaPaises', conteoPaises);
         }
 
-        // Función ayudante para crear el diseño de barras
         function renderListaHTML(elementoId, datosObjeto) {
             const contenedor = document.getElementById(elementoId);
-            contenedor.innerHTML = ''; // Limpiamos
+            contenedor.innerHTML = ''; 
 
-            // Ordenar de mayor a menor
             const arrayDatos = Object.entries(datosObjeto).sort((a, b) => b[1] - a[1]);
-            
-            // Sacar el valor más alto para calcular el porcentaje de la barra (100%)
             const maxValor = arrayDatos.length > 0 ? arrayDatos[0][1] : 1;
 
             arrayDatos.forEach(item => {
