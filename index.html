@@ -6,7 +6,40 @@
     <title>Ricardo Arjona - Proyecto Oficial</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        /* La capa oscura que cubre todo el sitio de fondo */
+        /* Reseteamos el cuerpo de la página para que ocupe todo el espacio */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+        }
+
+        /* Contenedor que simula la estructura exacta de tu frameset */
+        .contenedor-marcos {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* El marco superior del menú (exactamente a 120px como lo tenías) */
+        .marco-superior {
+            height: 120px;
+            width: 100%;
+            border: none;
+        }
+
+        /* El marco inferior del contenido (ocupa el resto de la pantalla "*") */
+        .marco-inferior {
+            flex-grow: 1;
+            width: 100%;
+            border: none;
+        }
+
+        /* La capa oscura del pop-up flotante (Ahora sí se verá por encima) */
         #loginOverlay {
             display: none; 
             position: fixed;
@@ -14,10 +47,10 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(26, 26, 26, 0.75) !important; 
-            backdrop-filter: blur(5px) !important; 
+            background-color: rgba(26, 26, 26, 0.75); 
+            backdrop-filter: blur(5px); 
             -webkit-backdrop-filter: blur(5px);
-            z-index: 99999999 !important; 
+            z-index: 999999; 
             justify-content: center;
             align-items: center;
         }
@@ -33,7 +66,6 @@
             width: 100%;
             text-align: center;
             margin: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .login-box h1 {
@@ -74,63 +106,57 @@
         }
     </style>
 </head>
+<body>
 
-<frameset rows="120, *" border="0" frameborder="0" framespacing="0">
-    <frame src="menu.html" name="menu" noresize scrolling="no">
-    <frame src="introduccion.html" name="contenido">
-    <noframes>
-        <body>
-            <p>Tu navegador no soporta marcos.</p>
-        </body>
-    </noframes>
-</frameset>
+    <div class="contenedor-marcos">
+        <iframe src="menu.html" name="menu" class="marco-superior" scrolling="no"></iframe>
+        <iframe src="introduccion.html" name="contenido" class="marco-inferior"></iframe>
+    </div>
 
-<script>
-    const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
-    const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Creamos el contenedor del pop-up flotante dinámicamente
-    const overlay = document.createElement('div');
-    overlay.id = 'loginOverlay';
-    overlay.innerHTML = `
+    <div id="loginOverlay">
         <div class="login-box">
             <h1>Bienvenido</h1>
             <p>Al Mundo de Ricardo Arjona</p>
             <button class="btn-google" id="btnGoogleAuth">Iniciar Sesión con Google</button>
         </div>
-    `;
-    document.documentElement.appendChild(overlay);
+    </div>
 
-    // 1. Escuchamos en tiempo real si hay sesión activa (Sin bloqueos manuales)
-    clienteSupabase.auth.onAuthStateChange((event, session) => {
-        if (session) {
-            overlay.style.display = 'none';
-        } else {
-            overlay.style.display = 'flex';
-        }
-    });
+    <script>
+        const SUPABASE_URL = 'https://mgbzmaiiplcvujzcqxan.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
+        const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const overlay = document.getElementById('loginOverlay');
 
-    // 2. Revisamos al cargar la página por primera vez
-    clienteSupabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) {
-            overlay.style.display = 'none';
-        } else {
-            overlay.style.display = 'flex';
-        }
-    });
-
-    // Evento del botón de Google
-    document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
-        await clienteSupabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: 'https://maferruano.github.io/Proyecto_ISDC/',
-                queryParams: {
-                    prompt: 'select_account'
-                }
+        // Escuchamos el estado de la sesión en tiempo real
+        clienteSupabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
             }
         });
-    });
-</script>
+
+        // Verificamos al iniciar la página
+        clienteSupabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+            }
+        });
+
+        // Evento de Login
+        document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
+            await clienteSupabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: 'https://maferruano.github.io/Proyecto_ISDC/',
+                    queryParams: {
+                        prompt: 'select_account'
+                    }
+                }
+            });
+        });
+    </script>
+</body>
 </html>
