@@ -137,9 +137,48 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        /* ==========================================
+           NUEVO MOTOR DE ANALÍTICAS EN SEGUNDO PLANO
+           ========================================== */
+        async function registrarAnalitica(paginaVisitada, tipo = 'page_view') {
+            try {
+                // 1. Averiguamos quién es el usuario
+                const { data: { session } } = await clienteSupabase.auth.getSession();
+                const correoUsuario = session ? session.user.email : 'anonimo';
+                
+                // 2. Averiguamos su navegador
+                let navegadorInfo = "Otro";
+                const ua = navigator.userAgent;
+                if (ua.includes("Edg")) navegadorInfo = "Edge";
+                else if (ua.includes("Chrome")) navegadorInfo = "Chrome";
+                else if (ua.includes("Firefox")) navegadorInfo = "Firefox";
+                else if (ua.includes("Safari") && !ua.includes("Chrome")) navegadorInfo = "Safari";
+
+                // 3. Enviamos los datos a la tabla silenciosamente
+                await clienteSupabase.from('analiticas').insert([{
+                    page_url: paginaVisitada,
+                    event_type: tipo,
+                    user_email: correoUsuario,
+                    browser: navegadorInfo
+                }]);
+            } catch (error) {
+                console.log("No se pudo registrar la analítica (ignorar si bloqueado):", error);
+            }
+        }
+
+        // Apenas carga el menú por primera vez, registramos que vieron la introducción
+        registrarAnalitica('introduccion.html', 'page_view');
+
+        /* ==========================================
+           FUNCIONES NORMALES DEL MENÚ
+           ========================================== */
         function setActive(element) {
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
+            
+            // Cuando dan clic, extraemos el enlace y lo mandamos a analíticas
+            const rutaDestino = element.getAttribute('href');
+            registrarAnalitica(rutaDestino, 'page_view');
         }
 
         function toggleMenu(event) {
@@ -157,12 +196,14 @@
         }
 
         async function logout() {
-            // Cerramos sesión
+            // Registramos que el usuario cerró sesión en las analíticas
+            await registrarAnalitica('menu_superior', 'logout');
+
             await clienteSupabase.auth.signOut();
             localStorage.clear();
             sessionStorage.clear();
             
-            // Refrescamos la ventana principal para que el index.html bloquee de nuevo
+            // Recargamos forzosamente la raíz para levantar el pop-up de login
             window.top.location.reload();
         }
     </script>
