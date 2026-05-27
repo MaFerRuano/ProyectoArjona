@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discografía | Ricardo Arjona</title>
     <style>
-        /* Manteniendo el código CSS */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -55,24 +54,110 @@
             text-transform: uppercase;
         }
 
-        .albums ul {
-            list-style: none;
-            padding: 0;
+        /* Estilo adicional para separar el iframe */
+        .player-container {
+            margin-top: 30px;
+            border: 1px solid #444;
+            padding: 10px;
+            background: #1a1a1a;
+            border-radius: 12px;
         }
 
-        .albums li {
+        /* =========================================
+           NUEVO SISTEMA DE ACORDEÓN PARA ÁLBUMES
+           ========================================= */
+        .albums-container {
+            margin-top: 40px;
+        }
+
+        .album-card {
             background: #242424;
-            margin: 10px 0;
-            padding: 15px;
+            margin: 15px 0;
             border: 1px solid #444;
+            border-radius: 4px;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
 
-        .albums li:hover {
+        .album-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .album-header:hover {
             background: #b91d1d; 
             color: #fff;
-            transform: scale(1.02);
-            cursor: default;
+        }
+
+        .album-info strong {
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .album-meta {
+            color: #aaaaaa;
+            font-size: 0.85rem;
+            margin-left: 10px;
+            font-style: italic;
+        }
+
+        .album-header:hover .album-meta {
+            color: #ffcccc; /* Aclara el texto gris cuando el fondo se vuelve rojo */
+        }
+
+        .toggle-icon {
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        /* Contenedor de canciones (Oculto por defecto) */
+        .tracklist-container {
+            display: none;
+            background: #1a1a1a;
+            padding: 20px;
+            border-top: 1px solid #444;
+        }
+
+        /* Cuando la tarjeta tiene la clase 'open', se muestra la lista y gira el ícono */
+        .album-card.open .tracklist-container {
+            display: block;
+        }
+
+        .album-card.open .toggle-icon {
+            transform: rotate(45deg); /* Gira el '+' para que parezca una 'x' */
+            color: #b91d1d;
+        }
+        
+        .album-card.open .album-header {
+            border-bottom: 1px solid #444;
+        }
+
+        .tracklist-container ol {
+            margin: 0;
+            padding-left: 20px;
+            color: #cccccc;
+        }
+
+        .tracklist-container li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #333;
+            transition: all 0.2s ease;
+        }
+
+        .tracklist-container li:last-child {
+            border-bottom: none;
+        }
+
+        .tracklist-container li:hover {
+            color: #ffffff;
+            padding-left: 10px; /* Efecto de desplazamiento a la derecha */
+            color: #b91d1d;
+            font-weight: bold;
         }
 
         footer {
@@ -81,15 +166,6 @@
             font-size: 0.8rem;
             color: #888;
             background-color: #1a1a1a;
-        }
-
-        /* Estilo adicional para separar el iframe */
-        .player-container {
-            margin-top: 30px;
-            border: 1px solid #444;
-            padding: 10px;
-            background: #1a1a1a;
-            border-radius: 12px;
         }
     </style>
 </head>
@@ -103,30 +179,173 @@
     <main class="container">
         <section class="bio-section">
             <h2>Álbumes y Reproductor</h2>
-            <p>Explora los sonidos que han marcado generaciones. Desde los clásicos de los 90 hasta sus producciones más recientes en Abbey Road.</p>
+            <p>Explora los sonidos que han marcado generaciones. Haz clic en cualquier lanzamiento para ver la lista oficial de canciones, tal como aparecen en las plataformas digitales.</p>
             
             <div class="player-container">
                 <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/0h1zs4CTlU9D2QtgPxptUD?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
 
-            <div class="albums" style="margin-top: 40px;">
+            <div class="albums-container">
                 <h3>Lista de Éxitos</h3>
-                <ul>
-                    <li>Animal Nocturno</li>
-                    <li>Historias</li>
-                    <li>Si el Norte fuera el Sur</li>
-                    <li>Sin Daños a Terceros</li>
-                    <li>Santo Pecado</li>
-                    <li>Independiente</li>
-                    <li>Blanco y Negro</li>
-                </ul>
+
+                <div class="album-card" onclick="toggleTracks(this)">
+                    <div class="album-header">
+                        <div class="album-info">
+                            <strong>SECO</strong> <span class="album-meta">(Álbum) • 2024</span>
+                        </div>
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="tracklist-container">
+                        <ol>
+                            <li>Despacio Que Hay Prisa</li>
+                            <li>Nirvana</li>
+                            <li>Todo Termina</li>
+                            <li>Seco</li>
+                            <li>El Que Olvida</li>
+                            <li>Los Locos Cuerdos</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="album-card" onclick="toggleTracks(this)">
+                    <div class="album-header">
+                        <div class="album-info">
+                            <strong>Blanco y Negro</strong> <span class="album-meta">(Álbum) • 2021</span>
+                        </div>
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="tracklist-container">
+                        <ol>
+                            <li>Morir Por Vivir</li>
+                            <li>El Amor Que Me Tenía</li>
+                            <li>Blues de la Notoriedad</li>
+                            <li>El Invisible</li>
+                            <li>Hongos</li>
+                            <li>Batichica</li>
+                            <li>Hacer Patria</li>
+                            <li>Tu Retrato</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="album-card" onclick="toggleTracks(this)">
+                    <div class="album-header">
+                        <div class="album-info">
+                            <strong>Tarot</strong> <span class="album-meta">(Sencillo) • 2021</span>
+                        </div>
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="tracklist-container">
+                        <ol>
+                            <li>Tarot</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="album-card" onclick="toggleTracks(this)">
+                    <div class="album-header">
+                        <div class="album-info">
+                            <strong>Apague la luz y escuche</strong> <span class="album-meta">(Compilación) • 2016</span>
+                        </div>
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="tracklist-container">
+                        <ol>
+                            <li>Adiós Melancolía (Acústico)</li>
+                            <li>Te Acuerdas de Mí (Acústico)</li>
+                            <li>Acontecimiento (Acústico)</li>
+                            <li>Nada Es Como Tú</li>
+                            <li>Asignatura Pendiente (Acústico)</li>
+                            <li>De Vez en Mes (Acústico)</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="album-card" onclick="toggleTracks(this)">
+                    <div class="album-header">
+                        <div class="album-info">
+                            <strong>Independiente</strong> <span class="album-meta">(Álbum) • 2011</span>
+                        </div>
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="tracklist-container">
+                        <ol>
+                            <li>Lo Que Está Bien Está Mal</li>
+                            <li>El Amor</li>
+                            <li>Te Juro</li>
+                            <li>Fuiste Tú (feat. Gaby Moreno)</li>
+                            <li>Te Quiero</li>
+                            <li>Si Tu No Existieras</li>
+                            <li>Reconciliación</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="album-card" onclick="toggleTracks(this)">
+                    <div class="album-header">
+                        <div class="album-info">
+                            <strong>Historias</strong> <span class="album-meta">(Álbum) • 1994</span>
+                        </div>
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="tracklist-container">
+                        <ol>
+                            <li>Si Yo Fuera</li>
+                            <li>Señora De Las Cuatro Décadas</li>
+                            <li>Casa De Locos</li>
+                            <li>Historia De Taxi</li>
+                            <li>La Noche Te Trae Sorpresas</li>
+                            <li>Te Conozco</li>
+                            <li>Realmente No Estoy Tan Solo</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="album-card" onclick="toggleTracks(this)">
+                    <div class="album-header">
+                        <div class="album-info">
+                            <strong>Animal Nocturno</strong> <span class="album-meta">(Álbum) • 1993</span>
+                        </div>
+                        <span class="toggle-icon">+</span>
+                    </div>
+                    <div class="tracklist-container">
+                        <ol>
+                            <li>Libre</li>
+                            <li>Primera Vez</li>
+                            <li>Mujeres</li>
+                            <li>Tiempo En Una Botella</li>
+                            <li>Como Olvidarte</li>
+                            <li>Baila Conmigo</li>
+                            <li>Animal Nocturno</li>
+                            <li>Jesús, Verbo No Sustantivo</li>
+                        </ol>
+                    </div>
+                </div>
+
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 Proyecto Web Ricardo Arjona | Sección Discografía</p>
+        <p>© 2026 Proyecto Web Ricardo Arjona | Sección Discografía</p>
     </footer>
 
+    <script>
+        function toggleTracks(elementoClickeado) {
+            // Comprobamos si el elemento que clickeamos ya está abierto
+            const estaAbierto = elementoClickeado.classList.contains('open');
+
+            // 1. Cerramos todos los álbumes primero para mantener el orden visual
+            document.querySelectorAll('.album-card').forEach(card => {
+                card.classList.remove('open');
+            });
+
+            // 2. Si el álbum NO estaba abierto, lo abrimos. 
+            // Si ya estaba abierto, el paso anterior lo cerró y así se queda.
+            if (!estaAbierto) {
+                elementoClickeado.classList.add('open');
+            }
+        }
+    </script>
 </body>
 </html>
