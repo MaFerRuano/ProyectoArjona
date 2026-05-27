@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Videoteca | Ricardo Arjona</title>
     <style>
-       
+        /* =========================================
+           ESTILOS MAESTROS
+           ========================================= */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -37,13 +39,13 @@
         }
 
         .container {
-            max-width: 1000px; /* Ancho ajustado para que los videos luzcan bien */
+            max-width: 1000px; 
             margin: 50px auto;
             padding: 0 20px;
         }
 
         /* =========================================
-           GRID DE VIDEOS (Matemáticamente alineado)
+           GRID DE VIDEOS
            ========================================= */
         .contenedor-videoteca {
             display: grid;
@@ -60,6 +62,7 @@
             transition: all 0.3s ease;
         }
 
+        /* Efecto hover general */
         .video-box:hover {
             border-color: #b91d1d;
             transform: scale(1.01);
@@ -80,6 +83,26 @@
             flex-direction: column;
             justify-content: space-between; 
             height: 100%; 
+        }
+
+        /* =========================================
+           NUEVO: CAPA INVISIBLE PARA CLICS
+           ========================================= */
+        .capa-clic {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10; /* Se pone por encima del iframe */
+            cursor: pointer; /* Cambia el mouse a una manita para indicar que es un botón */
+            background-color: rgba(0, 0, 0, 0); /* Totalmente transparente */
+            transition: background-color 0.3s;
+        }
+
+        /* Oscurecemos un poquito el video pequeño al pasar el mouse para que invite a hacer clic */
+        .video-box:hover .capa-clic {
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
         @media (max-width: 800px) {
@@ -112,26 +135,28 @@
     <main class="container">
         <div class="contenedor-videoteca">
             
-            <!-- VIDEO GRANDE (Izquierda) -->
             <div class="video-box">
-                <iframe src="https://www.youtube.com/embed/Eecg_IkYwWg?si=p-TYe-XKh1vG6T7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <iframe id="videoPrincipal" src="https://www.youtube.com/embed/Eecg_IkYwWg?si=p-TYe-XKh1vG6T7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
 
-            <!-- 3 VIDEOS PEQUEÑOS (Derecha) -->
             <div class="columna-derecha">
+                
                 <div class="video-box">
+                    <div class="capa-clic" onclick="intercambiarVideo(this)"></div>
                     <iframe src="https://www.youtube.com/embed/rtqe98TmTUE?si=D_oTnC6vk-FIMovy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
 
                 <div class="video-box">
+                    <div class="capa-clic" onclick="intercambiarVideo(this)"></div>
                     <iframe src="https://www.youtube.com/embed/U4_Ririesss?si=fMNZdHdZBka3wkSq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
 
                 <div class="video-box">
+                    <div class="capa-clic" onclick="intercambiarVideo(this)"></div>
                     <iframe src="https://www.youtube.com/embed/D1prB5z-RTU?si=MLDI083IQfL2XLGR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
-            </div>
 
+            </div>
         </div>
     </main>
 
@@ -139,5 +164,22 @@
         <p>&copy; 2026 Proyecto Web Ricardo Arjona | Videoteca Oficial</p>
     </footer>
 
+    <script>
+        function intercambiarVideo(capaClickeada) {
+            // 1. Buscamos el reproductor grande
+            const reproductorGrande = document.getElementById('videoPrincipal');
+            
+            // 2. Buscamos el reproductor pequeño que está justo debajo de la capa que clickeaste
+            const reproductorPequeno = capaClickeada.nextElementSibling;
+
+            // 3. Guardamos los links temporales
+            const linkGrande = reproductorGrande.src;
+            const linkPequeno = reproductorPequeno.src;
+
+            // 4. ¡Hacemos el intercambio! El grande recibe el link del pequeño y viceversa
+            reproductorGrande.src = linkPequeno;
+            reproductorPequeno.src = linkGrande;
+        }
+    </script>
 </body>
 </html>
