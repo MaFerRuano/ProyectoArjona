@@ -3,44 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Videoteca - Proyecto Arjona</title>
+    <title>Videoteca | Ricardo Arjona</title>
     <style>
-        /* Fondo general */
+       
         body {
-            background-color: #1a1a1a;
-            color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
             margin: 0;
-            padding: 0 0 50px 0;
+            padding: 0;
+            background-color: #2c2c2c; 
+            color: #f4f4f4; 
         }
 
-        /* =========================================
-           DISEÑO DEL BANNER DE TÍTULO (Como tu imagen)
-           ========================================= */
-        .banner-titulo {
-            background-color: #1a1a1a;
-            border-top: 3px solid #b91d1d;
-            border-bottom: 3px solid #b91d1d;
-            text-align: center;
-            padding: 50px 20px;
-            margin-bottom: 50px;
-        }
-
-        .banner-titulo h1 {
+        header {
+            background-color: #1a1a1a; 
             color: #ffffff;
-            font-size: 3rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin: 0 0 15px 0;
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 5px solid #b91d1d; 
         }
 
-        .banner-titulo p {
-            color: #b91d1d;
-            font-size: 1rem;
-            text-transform: uppercase;
-            font-weight: bold;
+        header h1 {
+            font-size: 3.5rem;
             letter-spacing: 2px;
             margin: 0;
+            text-transform: uppercase;
+        }
+
+        header p {
+            color: #b91d1d; 
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 1000px; /* Ancho ajustado para que los videos luzcan bien */
+            margin: 50px auto;
+            padding: 0 20px;
         }
 
         /* =========================================
@@ -48,15 +48,10 @@
            ========================================= */
         .contenedor-videoteca {
             display: grid;
-            /* La proporción 3 a 1 (73% y 24%) garantiza la altura perfecta */
             grid-template-columns: 73% 24%; 
             justify-content: space-between;
-            max-width: 1000px; /* Ancho estándar respetado */
-            margin: 0 auto;
-            padding: 0 20px;
         }
 
-        /* Forzamos el formato de cine (16:9) */
         .video-box {
             position: relative;
             width: 100%;
@@ -66,7 +61,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Hover con el color rojo Arjona */
         .video-box:hover {
             border-color: #b91d1d;
             transform: scale(1.01);
@@ -74,7 +68,6 @@
             z-index: 2;
         }
 
-        /* Los iframes ocupan todo su contenedor */
         .video-box iframe {
             position: absolute;
             top: 0;
@@ -83,15 +76,13 @@
             height: 100%;
         }
 
-        /* Columna derecha con distribución equitativa (space-between) */
         .columna-derecha {
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Distribuye el espacio para alinear superior e inferior */
+            justify-content: space-between; 
             height: 100%; 
         }
 
-        /* Diseño responsivo: En celulares se pone todo en una fila hacia abajo */
         @media (max-width: 800px) {
             .contenedor-videoteca {
                 grid-template-columns: 1fr;
@@ -101,40 +92,53 @@
                 gap: 20px;
             }
         }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.8rem;
+            color: #888;
+            background-color: #1a1a1a;
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- EL BANNER ESTILO ARJONA -->
-    <div class="banner-titulo">
+    <header>
         <h1>Videoteca Oficial</h1>
-        <p>Los grandes éxitos en formato audiovisual</p>
-    </div>
+        <p>LOS GRANDES ÉXITOS EN FORMATO AUDIOVISUAL</p>
+    </header>
 
-    <!-- EL CONTENEDOR CENTRAL ALINEADO -->
-    <div class="contenedor-videoteca">
-        
-        <!-- VIDEO GRANDE (Izquierda) -->
-        <div class="video-box">
-            <iframe src="https://www.youtube.com/embed/Eecg_IkYwWg?si=p-TYe-XKh1vG6T7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <main class="container">
+        <div class="contenedor-videoteca">
+            
+            <!-- VIDEO GRANDE (Izquierda) -->
+            <div class="video-box">
+                <iframe src="https://www.youtube.com/embed/Eecg_IkYwWg?si=p-TYe-XKh1vG6T7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <!-- 3 VIDEOS PEQUEÑOS (Derecha) -->
+            <div class="columna-derecha">
+                <div class="video-box">
+                    <iframe src="https://www.youtube.com/embed/rtqe98TmTUE?si=D_oTnC6vk-FIMovy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+
+                <div class="video-box">
+                    <iframe src="https://www.youtube.com/embed/U4_Ririesss?si=fMNZdHdZBka3wkSq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+
+                <div class="video-box">
+                    <iframe src="https://www.youtube.com/embed/D1prB5z-RTU?si=MLDI083IQfL2XLGR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </div>
+
         </div>
+    </main>
 
-        <!-- 3 VIDEOS PEQUEÑOS (Derecha) -->
-        <div class="columna-derecha">
-            <div class="video-box">
-                <iframe src="https://www.youtube.com/embed/rtqe98TmTUE?si=D_oTnC6vk-FIMovy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            </div>
-
-            <div class="video-box">
-                <iframe src="https://www.youtube.com/embed/U4_Ririesss?si=fMNZdHdZBka3wkSq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            </div>
-
-            <div class="video-box">
-                <iframe src="https://www.youtube.com/embed/D1prB5z-RTU?si=MLDI083IQfL2XLGR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            </div>
-        </div>
-
-    </div>
+    <footer>
+        <p>&copy; 2026 Proyecto Web Ricardo Arjona | Videoteca Oficial</p>
+    </footer>
 
 </body>
 </html>
