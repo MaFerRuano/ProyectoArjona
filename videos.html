@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videoteca - Proyecto Arjona</title>
+    <style>
+        /* Mantenemos tus colores y tipografía base */
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+
+        /* Encabezado de la página */
+        .header-seccion {
+            border-bottom: 3px solid #b91d1d;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header-seccion h1 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 2.2rem;
+        }
+
+        .header-seccion p {
+            color: #aaaaaa;
+            margin: 5px 0 0 0;
+            font-size: 1.1rem;
+        }
+
+        /* El Grid Principal: 2 partes para la izq, 1 parte para la der */
+        .contenedor-videoteca {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Columna derecha: apila los videos pequeños con espacio entre ellos */
+        .lista-secundaria {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Truco mágico de CSS para que los videos de YouTube sean responsivos y no se deformen */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Proporción exacta de 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px; /* Bordes redondeados modernos */
+            border: 2px solid #3d3d3d; /* Borde gris oscuro por defecto */
+            background-color: #000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        /* Al pasar el mouse, el borde se vuelve rojo Arjona y hace un ligero zoom */
+        .video-wrapper:hover {
+            border-color: #b91d1d;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(185, 29, 29, 0.2);
+        }
+
+        /* El iframe ocupa siempre el 100% de su envoltorio elástico */
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Diseño responsivo: Si la pantalla es muy pequeña, pone todo en una sola columna */
+        @media (max-width: 900px) {
+            .contenedor-videoteca {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-seccion">
+        <h1>Videoteca Oficial</h1>
+        <p>Los grandes éxitos en formato audiovisual</p>
+    </div>
+
+    <div class="contenedor-videoteca">
+        
+        <div class="video-principal">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/Eecg_IkYwWg?si=p-TYe-XKh1vG6T7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div class="lista-secundaria">
+            
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/rtqe98TmTUE?si=D_oTnC6vk-FIMovy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/U4_Ririesss?si=fMNZdHdZBka3wkSq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/D1prB5z-RTU?si=MLDI083IQfL2XLGR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
