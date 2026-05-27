@@ -380,6 +380,9 @@
                 const usuariosUnicos = new Set(analiticas.map(a => a.user_email).filter(e => e !== 'anonimo'));
                 document.getElementById('totalLogins').innerText = usuariosUnicos.size;
 
+                // ==========================================
+                // NUEVO CÁLCULO DE HORAS, MINUTOS Y SEGUNDOS
+                // ==========================================
                 let minutosTotales = 0;
                 let usuariosCalculados = 0;
                 for (let email in sesionesUsuario) {
@@ -390,14 +393,19 @@
                         usuariosCalculados++;
                     }
                 }
-                const promedioBruto = usuariosCalculados > 0 ? (minutosTotales / usuariosCalculados) : 0;
-                const mins = Math.floor(promedioBruto);
-                const secs = Math.floor((promedioBruto - mins) * 60);
                 
-                if (mins === 0 && secs === 0 && totalVistas > 0) {
+                const promedioBruto = usuariosCalculados > 0 ? (minutosTotales / usuariosCalculados) : 0;
+                
+                // Extraemos las horas, minutos y segundos exactos
+                const horas = Math.floor(promedioBruto / 60);
+                const mins = Math.floor(promedioBruto % 60);
+                const secs = Math.floor((promedioBruto - Math.floor(promedioBruto)) * 60);
+                
+                if (horas === 0 && mins === 0 && secs === 0 && totalVistas > 0) {
                     document.getElementById('tiempoPromedio').innerText = "< 1m";
                 } else {
-                    document.getElementById('tiempoPromedio').innerText = `${mins}m ${secs}s`;
+                    // Ahora inyectamos la "h" en el texto
+                    document.getElementById('tiempoPromedio').innerText = `${horas}h ${mins}m ${secs}s`;
                 }
 
                 // 4. GRÁFICA DE DÍAS (LÍNEA CON PUNTOS GRUESOS)
@@ -411,7 +419,7 @@
                 myChartDias = new Chart(ctxDias, {
                     type: 'line',
                     data: {
-                        labels: fechasOrdenadas, // Aquí saldrán las fechas abajo en el eje X
+                        labels: fechasOrdenadas, 
                         datasets: [{
                             label: 'Visitas',
                             data: valoresFechas,
@@ -421,7 +429,7 @@
                             fill: true,
                             tension: 0.3, 
                             pointBackgroundColor: '#ffffff',
-                            pointRadius: 6, // Puntos gruesos para que se vean aunque solo haya 1 día
+                            pointRadius: 6, 
                             pointHoverRadius: 8
                         }]
                     },
@@ -436,7 +444,7 @@
                             y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { stepSize: 1 } },
                             x: { 
                                 grid: { display: false },
-                                ticks: { color: '#aaaaaa' } // Asegura que las fechas abajo sean legibles
+                                ticks: { color: '#aaaaaa' } 
                             }
                         }
                     }
