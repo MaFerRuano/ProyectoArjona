@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biografía | Ricardo Arjona</title>
     <style>
-        /* Usando CSS */
+        /* =========================================
+           ESTILOS MAESTROS
+           ========================================= */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -53,26 +55,58 @@
         h2, h3 {
             color: #b91d1d; 
             text-transform: uppercase;
+            margin-top: 30px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
         }
 
-        .albums ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .albums li {
+        /* =========================================
+           NUEVO DISEÑO PARA LAS CITAS
+           ========================================= */
+        .quote-box {
             background: #242424;
-            margin: 10px 0;
-            padding: 15px;
-            border: 1px solid #444;
-            transition: all 0.3s ease;
+            margin: 20px 0;
+            padding: 25px 30px;
+            border-radius: 0 8px 8px 0;
+            border-left: 4px solid #b91d1d;
+            position: relative;
+            transition: transform 0.3s ease;
         }
 
-        .albums li:hover {
-            background: #b91d1d; 
-            color: #fff;
-            transform: scale(1.02);
-            cursor: default;
+        .quote-box:hover {
+            transform: translateX(10px);
+            background: #1a1a1a;
+        }
+
+        .quote-box p {
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #cccccc;
+            margin: 0;
+        }
+
+        /* Comillas gigantes de adorno */
+        .quote-box::before {
+            content: '\201C'; /* Código de comilla doble */
+            font-family: Georgia, serif;
+            font-size: 4rem;
+            color: #b91d1d;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            opacity: 0.2;
+            line-height: 1;
+        }
+
+        .quote-author {
+            display: block;
+            text-align: right;
+            font-weight: bold;
+            color: #b91d1d;
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
         }
 
         footer {
@@ -81,6 +115,7 @@
             font-size: 0.8rem;
             color: #888;
             background-color: #1a1a1a;
+            margin-top: 50px;
         }
     </style>
 </head>
@@ -93,7 +128,7 @@
 
     <main class="container">
         <article class="bio-section">
-            <h2>Biografía</h2>
+            <h2>Sus Orígenes</h2>
             <p>
                 <strong>Edgar Ricardo Arjona Morales</strong> nació el 19 de enero de 1964 en Jocotenango, Guatemala. Es uno de los artistas más exitosos de la historia de la música latina, conocido por su estilo lírico que a menudo aborda temas de amor, desamor y crítica social.
             </p>
@@ -104,15 +139,30 @@
                 A lo largo de su trayectoria, ha sido galardonado con numerosos premios, incluidos un Grammy y un Grammy Latino, consolidando un legado de más de 80 millones de álbumes vendidos alrededor del mundo.
             </p>
 
-            <h3>Hitos Musicales</h3>
-            <div class="albums">
-                <ul>
-                    <li><strong>1993:</strong> Lanzamiento de "Animal Nocturno".</li>
-                    <li><strong>1994:</strong> Estreno de "Historias", incluyendo el éxito "Señora de las cuatro décadas".</li>
-                    <li><strong>2011:</strong> Funda su propio sello discográfico independiente, "Metamorfosis".</li>
-                    <li><strong>2020:</strong> Proyecto "Blanco y Negro", grabado en los icónicos estudios Abbey Road.</li>
-                </ul>
+            <!-- NUEVA SECCIÓN: LADO HUMANO -->
+            <h3>Más Allá de los Escenarios</h3>
+            <p>
+                El compromiso de Arjona con su país natal lo llevó a crear la <strong>Fundación Adentro</strong>. A través de esta iniciativa, ha construido escuelas de primer nivel en zonas rurales de Guatemala, promoviendo un modelo educativo basado en la excelencia y las artes, demostrando que su influencia va mucho más allá de las letras de sus canciones.
+            </p>
+
+            <!-- NUEVA SECCIÓN: CITAS -->
+            <h3>En Sus Propias Palabras</h3>
+            
+            <div class="quote-box">
+                <p>"No me considero un cantante, me considero un tipo que cuenta historias que a veces riman."</p>
+                <span class="quote-author">- Ricardo Arjona</span>
             </div>
+
+            <div class="quote-box">
+                <p>"El éxito más grande de mi vida fue aprender a respirar debajo del agua cuando la industria me pedía que volara."</p>
+                <span class="quote-author">- Ricardo Arjona</span>
+            </div>
+
+            <div class="quote-box">
+                <p>"La música no es para competir, es para compartir. Las canciones son como los hijos, uno los cría y luego se van a hacer su vida en los oídos de otros."</p>
+                <span class="quote-author">- Ricardo Arjona</span>
+            </div>
+
         </article>
     </main>
 
