@@ -16,7 +16,6 @@
             justify-content: center;
             align-items: center;
             height: 100px; 
-            /* Se cambia a visible por precaución, aunque el nuevo menú no lo necesita */
             overflow: visible; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-bottom: 5px solid #b91d1d; 
@@ -84,20 +83,20 @@
         .dropdown-box {
             display: none;
             position: absolute;
-            right: 100%; /* Empuja el menú a la izquierda del avatar */
-            margin-right: 15px; /* Crea un espacio entre los botones y el avatar */
+            right: 100%; 
+            margin-right: 15px; 
             top: 50%;
-            transform: translateY(-50%); /* Lo centra verticalmente de forma perfecta */
+            transform: translateY(-50%); 
             background-color: #3d3d3d;
             box-shadow: 0px 8px 16px rgba(0,0,0,0.5);
             border-radius: 4px;
             border-bottom: 3px solid #b91d1d;
             z-index: 99999;
-            white-space: nowrap; /* Evita que los textos se partan en dos líneas */
+            white-space: nowrap; 
         }
 
         .dropdown-box.show {
-            display: flex; /* Muestra los botones en fila (horizontal) */
+            display: flex; 
             flex-direction: row;
         }
 
@@ -105,7 +104,7 @@
             color: #ffffff;
             background: none;
             border: none;
-            border-right: 1px solid #555555; /* Línea divisoria gris entre los botones */
+            border-right: 1px solid #555555; 
             padding: 12px 20px;
             text-align: center;
             font-weight: bold;
@@ -117,7 +116,7 @@
         }
 
         .dropdown-box button:last-child {
-            border-right: none; /* Le quita la línea divisoria al último botón */
+            border-right: none; 
         }
 
         .dropdown-box button:hover {
@@ -127,11 +126,10 @@
 </head>
 <body>
     <ul id="menuList">
-        <li><a href="introduccion.html" target="contenido" onclick="setActive(this)" class="active">Home</a></li>
+        <li><a href="introduccion.html" target="contenido" onclick="setActive(this)">Home</a></li>
         <li><a href="biografia.html" target="contenido" onclick="setActive(this)">Biografía</a></li>
         <li><a href="discografia.html" target="contenido" onclick="setActive(this)">Discografía</a></li>
         <li><a href="galeria.html" target="contenido" onclick="setActive(this)">Galería</a></li>
-        <!-- NUEVO ENLACE A VIDEOS -->
         <li><a href="videos.html" target="contenido" onclick="setActive(this)">Videoteca</a></li>
         <li><a href="poetica.html" target="contenido" onclick="setActive(this)">Poética</a></li>
         <li><a href="equipo.html" target="contenido" onclick="setActive(this)">Equipo</a></li>
@@ -159,7 +157,7 @@
             const { data: { session } } = await clienteSupabase.auth.getSession();
             const correoUsuario = session ? session.user.email : 'anonimo';
 
-            // Verificamos si es administrador para mostrar el botón
+            // Verificamos si es administrador
             if (session) {
                 const { data: admins } = await clienteSupabase.from('admins').select('*').eq('email', correoUsuario);
                 if (admins && admins.length > 0) {
@@ -167,7 +165,28 @@
                 }
             }
 
-            // Registramos la visita inicial
+            // ==========================================
+            // LÓGICA DE MEMORIA (EVITA QUE SE REINICIE)
+            // ==========================================
+            const ultimaPagina = sessionStorage.getItem('ultimaPagina') || 'introduccion.html';
+
+            // Pinta de rojo la pestaña correcta
+            document.querySelectorAll('a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === ultimaPagina) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Obliga al iframe de abajo a cargar la página correcta al refrescar
+            if (ultimaPagina !== 'introduccion.html') {
+                window.open(ultimaPagina, 'contenido');
+            } else {
+                // Si es introduccion, nos aseguramos que el de Home tenga la clase active por defecto
+                document.querySelector('a[href="introduccion.html"]').classList.add('active');
+            }
+
+            // Registramos la visita inicial con la página correcta
             let navegadorInfo = "Otro";
             const ua = navigator.userAgent;
             if (ua.includes("Edg")) navegadorInfo = "Edge";
@@ -177,7 +196,7 @@
 
             try {
                 await clienteSupabase.from('analiticas').insert([{
-                    page_url: 'introduccion.html',
+                    page_url: ultimaPagina,
                     event_type: 'page_view',
                     user_email: correoUsuario,
                     browser: navegadorInfo
@@ -192,6 +211,10 @@
             element.classList.add('active');
             
             const rutaDestino = element.getAttribute('href');
+
+            // GUARDAMOS LA PÁGINA EN LA MEMORIA DEL NAVEGADOR
+            sessionStorage.setItem('ultimaPagina', rutaDestino);
+
             clienteSupabase.auth.getSession().then(({ data: { session } }) => {
                 clienteSupabase.from('analiticas').insert([{
                     page_url: rutaDestino,
@@ -219,6 +242,8 @@
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             window.open('admin.html', 'contenido');
             document.getElementById("dropdownMenu").classList.remove('show');
+            // También guardamos el admin en memoria por si refrescas ahí
+            sessionStorage.setItem('ultimaPagina', 'admin.html');
         }
 
         async function logout() {
@@ -230,7 +255,7 @@
             }
             await clienteSupabase.auth.signOut();
             localStorage.clear();
-            sessionStorage.clear();
+            sessionStorage.clear(); // Limpiamos la memoria al salir
             window.top.location.reload();
         }
     </script>
