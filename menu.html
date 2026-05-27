@@ -158,10 +158,21 @@
             
             if (lastRowId && startTime) {
                 const segundosPasados = Math.floor((Date.now() - parseInt(startTime)) / 1000);
-                // Actualización silenciosa en la base de datos
-                await clienteSupabase.from('analiticas')
+                
+                console.log(`⏳ Intentando guardar ${segundosPasados}s en la visita ID: ${lastRowId}`);
+
+                // Actualización en la base de datos
+                const { error } = await clienteSupabase.from('analiticas')
                     .update({ duration_seconds: segundosPasados })
                     .eq('id', lastRowId);
+
+                if (error) {
+                    console.error("❌ ERROR DE SUPABASE: No me dejó guardar el tiempo.", error);
+                } else {
+                    console.log("✅ ¡Tiempo guardado con éxito!");
+                }
+            } else {
+                console.warn("⚠️ No encontré el ID de la fila anterior para guardar el tiempo.");
             }
         }
 
@@ -281,6 +292,17 @@
             sessionStorage.clear();
             window.top.location.reload();
         }
+
+        // ==========================================
+        // PARCHE DE SEGURIDAD: DETECTA CUANDO SE CIERRA O REFRESCA LA PESTAÑA
+        // ==========================================
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                // Justo cuando la pestaña se cierra, se oculta o se refresca, 
+                // lanzamos el guardado de emergencia.
+                guardarTiempoPaginaAnterior();
+            }
+        });
     </script>
 </body>
 </html>
