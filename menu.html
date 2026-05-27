@@ -77,9 +77,7 @@
             fill: #ffffff; 
         }
 
-        /* ==============================================
-           NUEVO MENÚ HORIZONTAL QUE SE ABRE A LA IZQUIERDA
-           ============================================== */
+        /* MENÚ HORIZONTAL ANTI-CORTE */
         .dropdown-box {
             display: none;
             position: absolute;
@@ -153,11 +151,24 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Función auxiliar para cerrar y guardar el tiempo de la página que el usuario está dejando
+        async function guardarTiempoPaginaAnterior() {
+            const lastRowId = sessionStorage.getItem('lastRowId');
+            const startTime = sessionStorage.getItem('pageStartTime');
+            
+            if (lastRowId && startTime) {
+                const segundosPasados = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+                // Actualización silenciosa en la base de datos
+                await clienteSupabase.from('analiticas')
+                    .update({ duration_seconds: segundosPasados })
+                    .eq('id', lastRowId);
+            }
+        }
+
         async function inicializarMenu() {
             const { data: { session } } = await clienteSupabase.auth.getSession();
             const correoUsuario = session ? session.user.email : 'anonimo';
 
-            // Verificamos si es administrador
             if (session) {
                 const { data: admins } = await clienteSupabase.from('admins').select('*').eq('email', correoUsuario);
                 if (admins && admins.length > 0) {
@@ -165,12 +176,8 @@
                 }
             }
 
-            // ==========================================
-            // LÓGICA DE MEMORIA (EVITA QUE SE REINICIE)
-            // ==========================================
             const ultimaPagina = sessionStorage.getItem('ultimaPagina') || 'introduccion.html';
 
-            // Pinta de rojo la pestaña correcta
             document.querySelectorAll('a').forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === ultimaPagina) {
@@ -178,15 +185,12 @@
                 }
             });
 
-            // Obliga al iframe de abajo a cargar la página correcta al refrescar
             if (ultimaPagina !== 'introduccion.html') {
                 window.open(ultimaPagina, 'contenido');
             } else {
-                // Si es introduccion, nos aseguramos que el de Home tenga la clase active por defecto
                 document.querySelector('a[href="introduccion.html"]').classList.add('active');
             }
 
-            // Registramos la visita inicial con la página correcta
             let navegadorInfo = "Otro";
             const ua = navigator.userAgent;
             if (ua.includes("Edg")) navegadorInfo = "Edge";
@@ -194,34 +198,49 @@
             else if (ua.includes("Firefox")) navegadorInfo = "Firefox";
             else if (ua.includes("Safari") && !ua.includes("Chrome")) navegadorInfo = "Safari";
 
+            // Insertar registro inicial de entrada y guardar su ID y hora
             try {
-                await clienteSupabase.from('analiticas').insert([{
+                const { data, error } = await clienteSupabase.from('analiticas').insert([{
                     page_url: ultimaPagina,
                     event_type: 'page_view',
                     user_email: correoUsuario,
                     browser: navegadorInfo
-                }]);
+                }]).select();
+
+                if (data && data.length > 0) {
+                    sessionStorage.setItem('lastRowId', data[0].id);
+                    sessionStorage.setItem('pageStartTime', Date.now());
+                }
             } catch (e) {}
         }
 
         inicializarMenu();
 
-        function setActive(element) {
+        async function setActive(element) {
+            // 1. Guardar el tiempo que pasó en la página anterior antes de cambiar
+            await guardarTiempoPaginaAnterior();
+
+            // 2. Modificaciones estéticas de las pestañas
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
             
             const rutaDestino = element.getAttribute('href');
-
-            // GUARDAMOS LA PÁGINA EN LA MEMORIA DEL NAVEGADOR
             sessionStorage.setItem('ultimaPagina', rutaDestino);
 
-            clienteSupabase.auth.getSession().then(({ data: { session } }) => {
-                clienteSupabase.from('analiticas').insert([{
-                    page_url: rutaDestino,
-                    event_type: 'page_view',
-                    user_email: session ? session.user.email : 'anonimo'
-                }]).then();
-            });
+            // 3. Crear el nuevo registro para la página a la que va entrando
+            const { data: { session } } = await clienteSupabase.auth.getSession();
+            const correoActual = session ? session.user.email : 'anonimo';
+
+            const { data } = await clienteSupabase.from('analiticas').insert([{
+                page_url: rutaDestino,
+                event_type: 'page_view',
+                user_email: correoActual
+            }]).select();
+
+            if (data && data.length > 0) {
+                sessionStorage.setItem('lastRowId', data[0].id);
+                sessionStorage.setItem('pageStartTime', Date.now());
+            }
         }
 
         function toggleMenu(event) {
@@ -238,15 +257,19 @@
             }
         }
 
-        function abrirPanelAdmin() {
+        async function abrirPanelAdmin() {
+            // Guardamos el tiempo de la página que deja antes de abrir el panel
+            await guardarTiempoPaginaAnterior();
+
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             window.open('admin.html', 'contenido');
             document.getElementById("dropdownMenu").classList.remove('show');
-            // También guardamos el admin en memoria por si refrescas ahí
             sessionStorage.setItem('ultimaPagina', 'admin.html');
         }
 
         async function logout() {
+            await guardarTiempoPaginaAnterior(); // Guardar el último tramo de tiempo
+
             const { data: { session } } = await clienteSupabase.auth.getSession();
             if (session) {
                 await clienteSupabase.from('analiticas').insert([{
@@ -255,7 +278,7 @@
             }
             await clienteSupabase.auth.signOut();
             localStorage.clear();
-            sessionStorage.clear(); // Limpiamos la memoria al salir
+            sessionStorage.clear();
             window.top.location.reload();
         }
     </script>
