@@ -5,73 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Videoteca - Proyecto Arjona</title>
     <style>
-        /* Mantenemos tus colores y tipografía base */
+        /* Fondo general */
         body {
             background-color: #1a1a1a;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 40px;
+            padding: 0 0 50px 0;
         }
 
-        /* Encabezado de la página */
-        .header-seccion {
+        /* =========================================
+           DISEÑO DEL BANNER DE TÍTULO (Como tu imagen)
+           ========================================= */
+        .banner-titulo {
+            background-color: #1a1a1a;
+            border-top: 3px solid #b91d1d;
             border-bottom: 3px solid #b91d1d;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
+            text-align: center;
+            padding: 50px 20px;
+            margin-bottom: 50px;
         }
 
-        .header-seccion h1 {
-            margin: 0;
+        .banner-titulo h1 {
+            color: #ffffff;
+            font-size: 3rem;
             text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0 0 15px 0;
+        }
+
+        .banner-titulo p {
+            color: #b91d1d;
+            font-size: 1rem;
+            text-transform: uppercase;
+            font-weight: bold;
             letter-spacing: 2px;
-            font-size: 2.2rem;
+            margin: 0;
         }
 
-        .header-seccion p {
-            color: #aaaaaa;
-            margin: 5px 0 0 0;
-            font-size: 1.1rem;
-        }
-
-        /* El Grid Principal: 2 partes para la izq, 1 parte para la der */
+        /* =========================================
+           GRID DE VIDEOS (Matemáticamente alineado)
+           ========================================= */
         .contenedor-videoteca {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            max-width: 1300px;
+            /* La proporción 3 a 1 (73% y 24%) garantiza la altura perfecta */
+            grid-template-columns: 73% 24%; 
+            justify-content: space-between;
+            max-width: 1000px; /* Ancho estándar respetado */
             margin: 0 auto;
+            padding: 0 20px;
         }
 
-        /* Columna derecha: apila los videos pequeños con espacio entre ellos */
-        .lista-secundaria {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Truco mágico de CSS para que los videos de YouTube sean responsivos y no se deformen */
-        .video-wrapper {
+        /* Forzamos el formato de cine (16:9) */
+        .video-box {
             position: relative;
-            padding-bottom: 56.25%; /* Proporción exacta de 16:9 */
-            height: 0;
-            overflow: hidden;
-            border-radius: 8px; /* Bordes redondeados modernos */
-            border: 2px solid #3d3d3d; /* Borde gris oscuro por defecto */
+            width: 100%;
+            aspect-ratio: 16 / 9; 
             background-color: #000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border: 2px solid #3d3d3d;
             transition: all 0.3s ease;
         }
 
-        /* Al pasar el mouse, el borde se vuelve rojo Arjona y hace un ligero zoom */
-        .video-wrapper:hover {
+        /* Hover con el color rojo Arjona */
+        .video-box:hover {
             border-color: #b91d1d;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(185, 29, 29, 0.2);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(185, 29, 29, 0.3);
+            z-index: 2;
         }
 
-        /* El iframe ocupa siempre el 100% de su envoltorio elástico */
-        .video-wrapper iframe {
+        /* Los iframes ocupan todo su contenedor */
+        .video-box iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -79,43 +83,55 @@
             height: 100%;
         }
 
-        /* Diseño responsivo: Si la pantalla es muy pequeña, pone todo en una sola columna */
-        @media (max-width: 900px) {
+        /* Columna derecha con distribución equitativa (space-between) */
+        .columna-derecha {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Distribuye el espacio para alinear superior e inferior */
+            height: 100%; 
+        }
+
+        /* Diseño responsivo: En celulares se pone todo en una fila hacia abajo */
+        @media (max-width: 800px) {
             .contenedor-videoteca {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .columna-derecha {
+                gap: 20px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="header-seccion">
+    <!-- EL BANNER ESTILO ARJONA -->
+    <div class="banner-titulo">
         <h1>Videoteca Oficial</h1>
         <p>Los grandes éxitos en formato audiovisual</p>
     </div>
 
+    <!-- EL CONTENEDOR CENTRAL ALINEADO -->
     <div class="contenedor-videoteca">
         
-        <div class="video-principal">
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/Eecg_IkYwWg?si=p-TYe-XKh1vG6T7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            </div>
+        <!-- VIDEO GRANDE (Izquierda) -->
+        <div class="video-box">
+            <iframe src="https://www.youtube.com/embed/Eecg_IkYwWg?si=p-TYe-XKh1vG6T7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>
 
-        <div class="lista-secundaria">
-            
-            <div class="video-wrapper">
+        <!-- 3 VIDEOS PEQUEÑOS (Derecha) -->
+        <div class="columna-derecha">
+            <div class="video-box">
                 <iframe src="https://www.youtube.com/embed/rtqe98TmTUE?si=D_oTnC6vk-FIMovy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
 
-            <div class="video-wrapper">
+            <div class="video-box">
                 <iframe src="https://www.youtube.com/embed/U4_Ririesss?si=fMNZdHdZBka3wkSq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
 
-            <div class="video-wrapper">
+            <div class="video-box">
                 <iframe src="https://www.youtube.com/embed/D1prB5z-RTU?si=MLDI083IQfL2XLGR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
-
         </div>
 
     </div>
