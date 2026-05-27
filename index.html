@@ -25,21 +25,21 @@
             width: 100vw;
         }
 
-        /* El marco superior del menú (exactamente a 120px como lo tenías) */
+        /* El marco superior del menú */
         .marco-superior {
             height: 120px;
             width: 100%;
             border: none;
         }
 
-        /* El marco inferior del contenido (ocupa el resto de la pantalla "*") */
+        /* El marco inferior del contenido */
         .marco-inferior {
             flex-grow: 1;
             width: 100%;
             border: none;
         }
 
-        /* La capa oscura del pop-up flotante (Ahora sí se verá por encima) */
+        /* La capa oscura del pop-up flotante */
         #loginOverlay {
             display: none; 
             position: fixed;
@@ -55,7 +55,7 @@
             align-items: center;
         }
 
-        /* Tu caja de Login clásica */
+        /* Caja de Login clásica */
         .login-box {
             background-color: #3d3d3d;
             padding: 50px 40px;
@@ -110,7 +110,7 @@
 
     <div class="contenedor-marcos">
         <iframe src="menu.html" name="menu" class="marco-superior" scrolling="no"></iframe>
-        <iframe src="introduccion.html" name="contenido" class="marco-inferior"></iframe>
+        <iframe src="introduccion.html" name="contenido" class="marco-inferior" id="iframeContenido"></iframe>
     </div>
 
     <div id="loginOverlay">
@@ -126,6 +126,17 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const overlay = document.getElementById('loginOverlay');
+
+        // ==========================================
+        // LÓGICA PARA RECORDAR LA ÚLTIMA PÁGINA
+        // ==========================================
+        const iframeContenido = document.getElementById('iframeContenido');
+        const ultimaPaginaGuardada = sessionStorage.getItem('ultimaPagina');
+        
+        // Si encontramos que estabas en otra página, cambiamos el iframe de inmediato
+        if (ultimaPaginaGuardada) {
+            iframeContenido.src = ultimaPaginaGuardada;
+        }
 
         // Escuchamos el estado de la sesión en tiempo real
         clienteSupabase.auth.onAuthStateChange((event, session) => {
