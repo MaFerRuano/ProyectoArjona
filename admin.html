@@ -282,7 +282,6 @@
             const haceUnaSemana = new Date();
             haceUnaSemana.setDate(hoy.getDate() - 7);
 
-            // Ajustamos los calendarios por defecto
             document.getElementById('fechaFin').value = hoy.toISOString().substring(0, 10);
             document.getElementById('fechaInicio').value = haceUnaSemana.toISOString().substring(0, 10);
             
@@ -317,7 +316,7 @@
                 const nombreTemporal = correo.split('@')[0];
                 document.getElementById('nombreAdmin').innerText = nombreTemporal;
 
-                // 2. FILTROS DE FECHA PUROS (Sin zonas horarias cruzadas)
+                // 2. FILTROS DE FECHA
                 const fInicio = document.getElementById('fechaInicio').value;
                 const fFin = document.getElementById('fechaFin').value;
 
@@ -328,27 +327,26 @@
                 const { data: analiticas, error: errorAnaliticas } = await query;
                 if (errorAnaliticas) throw errorAnaliticas;
 
-                // 3. EXTRACCIÓN DE DATOS SIN CONVERSIÓN DE FECHAS
+                // 3. EXTRACCIÓN Y PROCESAMIENTO DE DATOS
                 let totalVistas = 0;
                 const conteoPaginas = {};
                 const conteoNavegadores = {};
                 const conteoPaises = {};
                 const conteoFechas = {}; 
                 const conteoHoras = {}; 
-                const sesionesUsuario = {}; 
+
+                // Variables para el cálculo exacto del promedio desde la BD
+                let sumaSegundos = 0;
+                let conteoDuraciones = 0;
 
                 analiticas.forEach(reg => {
                     if (reg.event_type === 'page_view') {
                         totalVistas++;
                         
-                        // Normalizamos el texto (reemplazamos T por espacio por si acaso)
                         const fechaCruda = reg.created_at.replace('T', ' ');
-
-                        // Tomamos siempre los primeros 10 caracteres para el Día (Ej. 2026-05-21)
                         const diaTexto = fechaCruda.substring(0, 10);
                         conteoFechas[diaTexto] = (conteoFechas[diaTexto] || 0) + 1;
 
-                        // Tomamos siempre los caracteres 11 y 12 para la Hora (Ej. 14:00)
                         const horaTexto = fechaCruda.substring(11, 13) + ":00";
                         conteoHoras[horaTexto] = (conteoHoras[horaTexto] || 0) + 1;
 
@@ -361,14 +359,15 @@
                         let pais = reg.country || 'Guatemala';
                         conteoPaises[pais] = (conteoPaises[pais] || 0) + 1;
 
-                        if (reg.user_email !== 'anonimo') {
-                            if (!sesionesUsuario[reg.user_email]) sesionesUsuario[reg.user_email] = [];
-                            sesionesUsuario[reg.user_email].push(new Date(fechaCruda.replace(' ', 'T')).getTime());
+                        // Sumador directo de la nueva columna duration_seconds
+                        if (reg.duration_seconds !== undefined && reg.duration_seconds !== null) {
+                            sumaSegundos += reg.duration_seconds;
+                            conteoDuraciones++;
                         }
                     }
                 });
 
-                // Cajas Superiores
+                // Cajas Superiores básicas
                 document.getElementById('totalVisitas').innerText = totalVistas;
                 
                 let maxVistas = 0, pagGanadora = "-";
@@ -380,35 +379,20 @@
                 const usuariosUnicos = new Set(analiticas.map(a => a.user_email).filter(e => e !== 'anonimo'));
                 document.getElementById('totalLogins').innerText = usuariosUnicos.size;
 
-                // ==========================================
-                // NUEVO CÁLCULO DE HORAS, MINUTOS Y SEGUNDOS
-                // ==========================================
-                let minutosTotales = 0;
-                let usuariosCalculados = 0;
-                for (let email in sesionesUsuario) {
-                    const tiempos = sesionesUsuario[email];
-                    if (tiempos.length > 1) {
-                        const diffMilisegundos = Math.max(...tiempos) - Math.min(...tiempos);
-                        minutosTotales += diffMilisegundos / (1000 * 60);
-                        usuariosCalculados++;
-                    }
-                }
+                // MATEMÁTICA REAL DE TIEMPO PROMEDIO (COLUMNA DIRECTA)
+                const promedioSegundosGlobal = conteoDuraciones > 0 ? (sumaSegundos / conteoDuraciones) : 0;
                 
-                const promedioBruto = usuariosCalculados > 0 ? (minutosTotales / usuariosCalculados) : 0;
-                
-                // Extraemos las horas, minutos y segundos exactos
-                const horas = Math.floor(promedioBruto / 60);
-                const mins = Math.floor(promedioBruto % 60);
-                const secs = Math.floor((promedioBruto - Math.floor(promedioBruto)) * 60);
+                const horas = Math.floor(promedioSegundosGlobal / 3600);
+                const mins = Math.floor((promedioSegundosGlobal % 3600) / 60);
+                const secs = Math.floor(promedioSegundosGlobal % 60);
                 
                 if (horas === 0 && mins === 0 && secs === 0 && totalVistas > 0) {
-                    document.getElementById('tiempoPromedio').innerText = "< 1m";
+                    document.getElementById('tiempoPromedio').innerText = "< 1s";
                 } else {
-                    // Ahora inyectamos la "h" en el texto
                     document.getElementById('tiempoPromedio').innerText = `${horas}h ${mins}m ${secs}s`;
                 }
 
-                // 4. GRÁFICA DE DÍAS (LÍNEA CON PUNTOS GRUESOS)
+                // 4. GRÁFICA DE DÍAS (LÍNEA CON PUNTOS)
                 Chart.defaults.color = '#aaaaaa';
                 const ctxDias = document.getElementById('graficaTiempo').getContext('2d');
                 if (myChartDias) myChartDias.destroy(); 
@@ -442,10 +426,7 @@
                         },
                         scales: {
                             y: { beginAtZero: true, grid: { color: '#333333' }, ticks: { stepSize: 1 } },
-                            x: { 
-                                grid: { display: false },
-                                ticks: { color: '#aaaaaa' } 
-                            }
+                            x: { grid: { display: false }, ticks: { color: '#aaaaaa' } }
                         }
                     }
                 });
