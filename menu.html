@@ -25,17 +25,17 @@
         ul {
             list-style: none;
             display: flex;
-            gap: 30px;
+            gap: 20px; /* Reduje un poco el gap para que quepa la nueva opción */
         }
 
         a {
             text-decoration: none;
             color: #ffffff; 
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* Ajusté ligeramente el tamaño para mejor ajuste */
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 4px;
             transition: all 0.3s ease;
             border: 1px solid transparent;
@@ -127,6 +127,7 @@
         <li><a href="introduccion.html" target="contenido" onclick="setActive(this)">Home</a></li>
         <li><a href="biografia.html" target="contenido" onclick="setActive(this)">Biografía</a></li>
         <li><a href="discografia.html" target="contenido" onclick="setActive(this)">Discografía</a></li>
+        <li><a href="tour.html" target="contenido" onclick="setActive(this)">Tour</a></li> <!-- NUEVA OPCIÓN -->
         <li><a href="galeria.html" target="contenido" onclick="setActive(this)">Galería</a></li>
         <li><a href="videos.html" target="contenido" onclick="setActive(this)">Videoteca</a></li>
         <li><a href="poetica.html" target="contenido" onclick="setActive(this)">Poética</a></li>
@@ -151,28 +152,15 @@
         const SUPABASE_KEY = 'sb_publishable_OFv41HzOqNPVwWlmZHNOUQ_ojBYoFO0';
         const clienteSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Función auxiliar para cerrar y guardar el tiempo de la página que el usuario está dejando
         async function guardarTiempoPaginaAnterior() {
             const lastRowId = sessionStorage.getItem('lastRowId');
             const startTime = sessionStorage.getItem('pageStartTime');
             
             if (lastRowId && startTime) {
                 const segundosPasados = Math.floor((Date.now() - parseInt(startTime)) / 1000);
-                
-                console.log(`⏳ Intentando guardar ${segundosPasados}s en la visita ID: ${lastRowId}`);
-
-                // Actualización en la base de datos
-                const { error } = await clienteSupabase.from('analiticas')
+                await clienteSupabase.from('analiticas')
                     .update({ duration_seconds: segundosPasados })
                     .eq('id', lastRowId);
-
-                if (error) {
-                    console.error("❌ ERROR DE SUPABASE: No me dejó guardar el tiempo.", error);
-                } else {
-                    console.log("✅ ¡Tiempo guardado con éxito!");
-                }
-            } else {
-                console.warn("⚠️ No encontré el ID de la fila anterior para guardar el tiempo.");
             }
         }
 
@@ -209,7 +197,6 @@
             else if (ua.includes("Firefox")) navegadorInfo = "Firefox";
             else if (ua.includes("Safari") && !ua.includes("Chrome")) navegadorInfo = "Safari";
 
-            // Insertar registro inicial de entrada y guardar su ID y hora
             try {
                 const { data, error } = await clienteSupabase.from('analiticas').insert([{
                     page_url: ultimaPagina,
@@ -228,17 +215,12 @@
         inicializarMenu();
 
         async function setActive(element) {
-            // 1. Guardar el tiempo que pasó en la página anterior antes de cambiar
             await guardarTiempoPaginaAnterior();
-
-            // 2. Modificaciones estéticas de las pestañas
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
-            
             const rutaDestino = element.getAttribute('href');
             sessionStorage.setItem('ultimaPagina', rutaDestino);
 
-            // 3. Crear el nuevo registro para la página a la que va entrando
             const { data: { session } } = await clienteSupabase.auth.getSession();
             const correoActual = session ? session.user.email : 'anonimo';
 
@@ -269,9 +251,7 @@
         }
 
         async function abrirPanelAdmin() {
-            // Guardamos el tiempo de la página que deja antes de abrir el panel
             await guardarTiempoPaginaAnterior();
-
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             window.open('admin.html', 'contenido');
             document.getElementById("dropdownMenu").classList.remove('show');
@@ -279,8 +259,7 @@
         }
 
         async function logout() {
-            await guardarTiempoPaginaAnterior(); // Guardar el último tramo de tiempo
-
+            await guardarTiempoPaginaAnterior();
             const { data: { session } } = await clienteSupabase.auth.getSession();
             if (session) {
                 await clienteSupabase.from('analiticas').insert([{
@@ -293,13 +272,8 @@
             window.top.location.reload();
         }
 
-        // ==========================================
-        // PARCHE DE SEGURIDAD: DETECTA CUANDO SE CIERRA O REFRESCA LA PESTAÑA
-        // ==========================================
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
-                // Justo cuando la pestaña se cierra, se oculta o se refresca, 
-                // lanzamos el guardado de emergencia.
                 guardarTiempoPaginaAnterior();
             }
         });
