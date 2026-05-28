@@ -13,12 +13,11 @@
             color: #f4f4f4; 
         }
 
-        /* Foto de cabecera */
+        /* FOTO DE CABECERA CORREGIDA (Sin recortes) */
         .tour-header-img {
             width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: cover;
+            height: auto; /* Mantiene la proporción original de la imagen */
+            display: block; /* Evita espacios en blanco debajo de la imagen */
             border-bottom: 5px solid #b91d1d;
         }
 
@@ -38,6 +37,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap; /* Permite que el botón baje en pantallas de celular */
+            gap: 20px;
         }
 
         .event-info h3 {
@@ -60,6 +61,8 @@
             text-transform: uppercase;
             border-radius: 4px;
             transition: 0.3s;
+            text-align: center;
+            white-space: nowrap; /* Evita que el texto del botón se rompa en dos líneas */
         }
 
         .btn-comprar:hover {
@@ -74,35 +77,42 @@
             color: #888;
             background-color: #1a1a1a;
         }
+
+        /* Diseño responsivo para celulares */
+        @media (max-width: 600px) {
+            .event-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .btn-comprar {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Imagen superior -->
+    <!-- Imagen superior ya sin cortes -->
     <img src="RICARDO-ARJONA-TOUR.png" alt="Ricardo Arjona Tour" class="tour-header-img">
 
     <main class="container">
-        <h2>Próximas Fechas</h2>
-        <p>Consulta las ciudades donde el tour llegará pronto. ¡No te quedes fuera!</p>
+        <h2>Próximas Fechas Oficiales</h2>
+        <p>Asegura tu lugar en el próximo concierto. Todas las compras se redirigen a la taquilla oficial.</p>
 
-        <!-- Aquí puedes repetir este bloque por cada concierto -->
+        <!-- ============================================== -->
+        <!-- PLANTILLA DE CONCIERTO (Copia y pega para añadir más) -->
+        <!-- ============================================== -->
         <div class="event-card">
             <div class="event-info">
-                <h3>Ciudad de Guatemala</h3>
-                <p>Estadio Doroteo Guamuch Flores</p>
-                <p><strong>Fecha:</strong> 25 de noviembre, 2026</p>
+                <h3>[Nombre de la Ciudad / País]</h3>
+                <p>[Nombre del Estadio o Recinto]</p>
+                <p><strong>Fecha:</strong> [Día y Mes]</p>
             </div>
+            <!-- El enlace lleva directamente a la página que pediste -->
             <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
         </div>
+        <!-- ============================================== -->
 
-        <div class="event-card">
-            <div class="event-info">
-                <h3>San Salvador</h3>
-                <p>Estadio Cuscatlán</p>
-                <p><strong>Fecha:</strong> 02 de diciembre, 2026</p>
-            </div>
-            <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
-        </div>
     </main>
 
     <footer>
