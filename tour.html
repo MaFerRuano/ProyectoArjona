@@ -23,60 +23,56 @@
 
         .container {
             max-width: 800px;
-            margin: 40px auto;
+            margin: 60px auto;
             padding: 20px;
+            text-align: center; /* Centramos el texto para este nuevo diseño */
         }
 
-        .event-card {
+        .tour-info-box {
             background-color: #3d3d3d;
-            padding: 30px;
+            padding: 50px 30px;
             border-radius: 4px;
-            border-left: 10px solid #b91d1d;
+            border-top: 10px solid #b91d1d;
             box-shadow: 10px 10px 0px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap; 
-            gap: 20px;
-            transition: transform 0.3s ease, background-color 0.3s ease;
         }
 
-        .event-card:hover {
-            background-color: #444444;
-            transform: translateY(-5px);
-        }
-
-        .event-info h3 {
+        .tour-info-box h2 {
             color: #ffffff;
-            margin: 0 0 10px 0;
             text-transform: uppercase;
-            font-size: 1.4rem;
+            font-size: 2.2rem;
+            margin-top: 0;
+            margin-bottom: 15px;
         }
 
-        .event-info p {
-            margin: 5px 0;
-            color: #aaaaaa;
-            font-size: 1.1rem;
+        .tour-info-box p {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .btn-container {
+            margin-top: 20px;
         }
 
         .btn-comprar {
             background-color: #b91d1d;
             color: white;
-            padding: 15px 25px;
+            padding: 20px 40px;
             text-decoration: none;
             font-weight: bold;
+            font-size: 1.2rem;
             text-transform: uppercase;
             border-radius: 4px;
-            transition: 0.3s;
-            text-align: center;
-            white-space: nowrap; 
+            transition: all 0.3s ease;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .btn-comprar:hover {
             background-color: #e62424;
             transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(185, 29, 29, 0.4);
+            box-shadow: 0 6px 15px rgba(185, 29, 29, 0.5);
         }
 
         footer {
@@ -85,83 +81,24 @@
             font-size: 0.8rem;
             color: #888;
             background-color: #1a1a1a;
-        }
-
-        /* Diseño responsivo para celulares */
-        @media (max-width: 600px) {
-            .event-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            .btn-comprar {
-                width: 100%;
-            }
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
 
     <!-- Imagen superior con altura automática para evitar cortes -->
-    <img src="RICARDO-ARJONA-TOUR.png" alt="Ricardo Arjona - Tour Lo Que El Seco No Dijo" class="tour-header-img">
+    <img src="RICARDO-ARJONA-TOUR.png" alt="Ricardo Arjona - Tour" class="tour-header-img">
 
     <main class="container">
-        <h2 style="color: #b91d1d; text-transform: uppercase; font-size: 2rem;">Próximas Fechas Oficiales</h2>
-        <p style="margin-bottom: 40px; font-size: 1.1rem; color: #cccccc;">Asegura tu lugar en el próximo concierto. Todas las compras se redirigen a la taquilla oficial de la gira.</p>
+        <div class="tour-info-box">
+            <h2>Próximas Fechas Oficiales</h2>
+            <p>Asegura tu lugar en el próximo concierto. Descubre si el Tour pasa por tu ciudad y adquiere tus boletos directamente en la taquilla oficial.</p>
 
-        <div class="event-card">
-            <div class="event-info">
-                <h3>Santiago, Chile</h3>
-                <p>Movistar Arena</p>
-                <p><strong>Fecha:</strong> 5 de junio, 2026</p>
+            <div class="btn-container">
+                <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Ver Fechas y Comprar Entradas</a>
             </div>
-            <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
         </div>
-
-        <div class="event-card">
-            <div class="event-info">
-                <h3>Lima, Perú</h3>
-                <p>Estadio Nacional</p>
-                <p><strong>Fecha:</strong> 26 de junio, 2026</p>
-            </div>
-            <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
-        </div>
-
-        <div class="event-card">
-            <div class="event-info">
-                <h3>Bogotá, Colombia</h3>
-                <p>Movistar Arena</p>
-                <p><strong>Fecha:</strong> 26 de julio, 2026</p>
-            </div>
-            <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
-        </div>
-
-        <div class="event-card">
-            <div class="event-info">
-                <h3>San José, Costa Rica</h3>
-                <p>Estadio Nacional</p>
-                <p><strong>Fecha:</strong> 14 de agosto, 2026</p>
-            </div>
-            <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
-        </div>
-
-        <div class="event-card">
-            <div class="event-info">
-                <h3>San Salvador, El Salvador</h3>
-                <p>Estadio Cuscatlán</p>
-                <p><strong>Fecha:</strong> 31 de octubre, 2026</p>
-            </div>
-            <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
-        </div>
-
-        <div class="event-card">
-            <div class="event-info">
-                <h3>Ciudad de México, México</h3>
-                <p>Estadio Azteca</p>
-                <p><strong>Fecha:</strong> 19 de diciembre, 2026</p>
-            </div>
-            <a href="https://ricardoarjona.com/tour/" target="_blank" class="btn-comprar">Comprar Entradas</a>
-        </div>
-
     </main>
 
     <footer>
