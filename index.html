@@ -104,6 +104,34 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(185, 29, 29, 0.3);
         }
+
+        /* =========================================
+           DISEÑO DEL BOTÓN IR ARRIBA
+           ========================================= */
+        #btnScrollTop {
+            display: none; /* Oculto por defecto, se muestra con JS */
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999998; 
+            background-color: #b91d1d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #btnScrollTop:hover {
+            background-color: #e62424;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -112,6 +140,9 @@
         <iframe src="menu.html" name="menu" class="marco-superior" scrolling="no"></iframe>
         <iframe src="introduccion.html" name="contenido" class="marco-inferior" id="iframeContenido"></iframe>
     </div>
+
+    <!-- Botón Global para ir hacia arriba -->
+    <button id="btnScrollTop" title="Ir arriba">▲</button>
 
     <div id="loginOverlay">
         <div class="login-box">
@@ -133,12 +164,45 @@
         const iframeContenido = document.getElementById('iframeContenido');
         const ultimaPaginaGuardada = sessionStorage.getItem('ultimaPagina');
         
-        // Si encontramos que estabas en otra página, cambiamos el iframe de inmediato
         if (ultimaPaginaGuardada) {
             iframeContenido.src = ultimaPaginaGuardada;
         }
 
-        // Escuchamos el estado de la sesión en tiempo real
+        // ==========================================
+        // LÓGICA DEL BOTÓN IR ARRIBA (CENTRALIZADO)
+        // ==========================================
+        const btnScroll = document.getElementById('btnScrollTop');
+
+        function revisarScroll() {
+            try {
+                // Si el iframe ha bajado más de 300px, muestra el botón
+                if (iframeContenido.contentWindow.scrollY > 300) {
+                    btnScroll.style.display = 'flex';
+                } else {
+                    btnScroll.style.display = 'none';
+                }
+            } catch (e) {
+                // Silenciamos cualquier error de lectura mientras el iframe carga
+            }
+        }
+
+        // Cada vez que se cargue una página nueva dentro del iframe, le conectamos el detector
+        iframeContenido.addEventListener('load', () => {
+            iframeContenido.contentWindow.addEventListener('scroll', revisarScroll);
+            revisarScroll(); // Revisión inicial por si la página se cargó a la mitad
+        });
+
+        // Acción al hacer clic en el botón
+        btnScroll.addEventListener('click', () => {
+            iframeContenido.contentWindow.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // ==========================================
+        // LÓGICA DE SESIÓN (SUPABASE)
+        // ==========================================
         clienteSupabase.auth.onAuthStateChange((event, session) => {
             if (session) {
                 overlay.style.display = 'none';
@@ -147,7 +211,6 @@
             }
         });
 
-        // Verificamos al iniciar la página
         clienteSupabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
                 overlay.style.display = 'none';
@@ -156,7 +219,6 @@
             }
         });
 
-        // Evento de Login
         document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
             await clienteSupabase.auth.signInWithOAuth({
                 provider: 'google',
