@@ -13,32 +13,47 @@
         body {
             background-color: #1a1a1a !important; 
             display: flex;
-            justify-content: center;
+            justify-content: flex-start; /* Cambiado para que empiece desde la izquierda */
             align-items: center;
             height: 100px; 
             overflow: visible; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-bottom: 5px solid #b91d1d; 
             position: relative;
+            padding-left: 20px; /* Espacio inicial */
         }
 
+        /* =========================================
+           MAGIA RESPONSIVA: MENÚ DESLIZABLE
+           ========================================= */
         ul {
             list-style: none;
             display: flex;
-            gap: 20px; /* Reduje un poco el gap para que quepa la nueva opción */
+            gap: 15px;
+            overflow-x: auto; /* Permite el scroll horizontal */
+            white-space: nowrap; /* Evita que los botones bajen a otra línea */
+            width: calc(100% - 70px); /* Deja espacio exacto para el botón de usuario */
+            padding-right: 20px;
+            scrollbar-width: none; /* Oculta la barra de scroll en Firefox */
+            -webkit-overflow-scrolling: touch; /* Scroll suave en iPhones */
+        }
+
+        ul::-webkit-scrollbar {
+            display: none; /* Oculta la barra de scroll en Chrome/Safari/Edge */
         }
 
         a {
             text-decoration: none;
             color: #ffffff; 
             font-weight: bold;
-            font-size: 0.85rem; /* Ajusté ligeramente el tamaño para mejor ajuste */
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             padding: 10px 15px;
             border-radius: 4px;
             transition: all 0.3s ease;
             border: 1px solid transparent;
+            display: inline-block;
         }
 
         a:hover {
@@ -55,9 +70,12 @@
 
         .user-menu-container {
             position: absolute;
-            right: 40px;
+            right: 20px;
             display: flex;
             align-items: center;
+            background-color: #1a1a1a; /* Fondo sólido para que las letras no pasen por debajo del ícono */
+            padding-left: 10px;
+            height: 100%; /* Cubre la altura del menú */
         }
 
         .vector-avatar-btn {
@@ -120,6 +138,23 @@
         .dropdown-box button:hover {
             background-color: #b91d1d;
         }
+
+        /* Ajustes extra para pantallas de celular muy pequeñas */
+        @media (max-width: 600px) {
+            body {
+                padding-left: 10px;
+            }
+            ul {
+                gap: 5px;
+            }
+            a {
+                font-size: 0.75rem;
+                padding: 10px 12px;
+            }
+            .user-menu-container {
+                right: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -127,7 +162,7 @@
         <li><a href="introduccion.html" target="contenido" onclick="setActive(this)">Home</a></li>
         <li><a href="biografia.html" target="contenido" onclick="setActive(this)">Biografía</a></li>
         <li><a href="discografia.html" target="contenido" onclick="setActive(this)">Discografía</a></li>
-        <li><a href="tour.html" target="contenido" onclick="setActive(this)">Tour</a></li> <!-- NUEVA OPCIÓN -->
+        <li><a href="tour.html" target="contenido" onclick="setActive(this)">Tour</a></li>
         <li><a href="galeria.html" target="contenido" onclick="setActive(this)">Galería</a></li>
         <li><a href="videos.html" target="contenido" onclick="setActive(this)">Videoteca</a></li>
         <li><a href="poetica.html" target="contenido" onclick="setActive(this)">Poética</a></li>
@@ -181,13 +216,16 @@
                 link.classList.remove('active');
                 if (link.getAttribute('href') === ultimaPagina) {
                     link.classList.add('active');
+                    // Hace que el menú haga scroll automático hacia el botón activo al cargar
+                    link.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
                 }
             });
 
             if (ultimaPagina !== 'introduccion.html') {
                 window.open(ultimaPagina, 'contenido');
             } else {
-                document.querySelector('a[href="introduccion.html"]').classList.add('active');
+                const homeLink = document.querySelector('a[href="introduccion.html"]');
+                homeLink.classList.add('active');
             }
 
             let navegadorInfo = "Otro";
@@ -216,8 +254,13 @@
 
         async function setActive(element) {
             await guardarTiempoPaginaAnterior();
+            
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
+            
+            // Centra el botón que tocaste en la pantalla del celular
+            element.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+
             const rutaDestino = element.getAttribute('href');
             sessionStorage.setItem('ultimaPagina', rutaDestino);
 
