@@ -10,36 +10,23 @@
             box-sizing: border-box;
         }
 
+        /* DISEÑO ORIGINAL PARA COMPUTADORA (Centrado) */
         body {
             background-color: #1a1a1a !important; 
             display: flex;
-            justify-content: flex-start; /* Cambiado para que empiece desde la izquierda */
+            justify-content: center; /* Vuelve a estar centrado para PC */
             align-items: center;
             height: 100px; 
             overflow: visible; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-bottom: 5px solid #b91d1d; 
             position: relative;
-            padding-left: 20px; /* Espacio inicial */
         }
 
-        /* =========================================
-           MAGIA RESPONSIVA: MENÚ DESLIZABLE
-           ========================================= */
         ul {
             list-style: none;
             display: flex;
-            gap: 15px;
-            overflow-x: auto; /* Permite el scroll horizontal */
-            white-space: nowrap; /* Evita que los botones bajen a otra línea */
-            width: calc(100% - 70px); /* Deja espacio exacto para el botón de usuario */
-            padding-right: 20px;
-            scrollbar-width: none; /* Oculta la barra de scroll en Firefox */
-            -webkit-overflow-scrolling: touch; /* Scroll suave en iPhones */
-        }
-
-        ul::-webkit-scrollbar {
-            display: none; /* Oculta la barra de scroll en Chrome/Safari/Edge */
+            gap: 20px;
         }
 
         a {
@@ -53,7 +40,6 @@
             border-radius: 4px;
             transition: all 0.3s ease;
             border: 1px solid transparent;
-            display: inline-block;
         }
 
         a:hover {
@@ -70,12 +56,9 @@
 
         .user-menu-container {
             position: absolute;
-            right: 20px;
+            right: 40px;
             display: flex;
             align-items: center;
-            background-color: #1a1a1a; /* Fondo sólido para que las letras no pasen por debajo del ícono */
-            padding-left: 10px;
-            height: 100%; /* Cubre la altura del menú */
         }
 
         .vector-avatar-btn {
@@ -139,20 +122,40 @@
             background-color: #b91d1d;
         }
 
-        /* Ajustes extra para pantallas de celular muy pequeñas */
-        @media (max-width: 600px) {
+        /* =========================================
+           MAGIA RESPONSIVA: SOLO APLICA EN CELULARES
+           ========================================= */
+        @media (max-width: 768px) {
             body {
-                padding-left: 10px;
+                justify-content: flex-start; /* Alinea a la izquierda solo en cel */
+                padding-left: 15px;
             }
+
             ul {
-                gap: 5px;
+                overflow-x: auto; /* Activa el scroll horizontal */
+                white-space: nowrap; /* Evita que los botones se vayan para abajo */
+                width: calc(100% - 60px); /* Deja espacio exacto para el botón de usuario */
+                padding-right: 20px;
+                scrollbar-width: none; /* Oculta la barra en Firefox */
+                -webkit-overflow-scrolling: touch; /* Scroll suave en iPhone */
+                gap: 10px; /* Reduce el espacio entre botones */
             }
+
+            ul::-webkit-scrollbar {
+                display: none; /* Oculta la barra en Chrome/Safari */
+            }
+
             a {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
                 padding: 10px 12px;
+                display: inline-block;
             }
+
             .user-menu-container {
-                right: 10px;
+                right: 15px;
+                background-color: #1a1a1a; /* Evita que el texto pase por debajo del icono */
+                padding-left: 10px;
+                height: 100%;
             }
         }
     </style>
@@ -216,8 +219,10 @@
                 link.classList.remove('active');
                 if (link.getAttribute('href') === ultimaPagina) {
                     link.classList.add('active');
-                    // Hace que el menú haga scroll automático hacia el botón activo al cargar
-                    link.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                    // Solo hace el scroll automático si la pantalla es de celular
+                    if(window.innerWidth <= 768) {
+                        link.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                    }
                 }
             });
 
@@ -258,8 +263,10 @@
             document.querySelectorAll('a').forEach(link => link.classList.remove('active'));
             element.classList.add('active');
             
-            // Centra el botón que tocaste en la pantalla del celular
-            element.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+            // Centra el botón que tocaste solo si estás en celular
+            if(window.innerWidth <= 768) {
+                element.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+            }
 
             const rutaDestino = element.getAttribute('href');
             sessionStorage.setItem('ultimaPagina', rutaDestino);
