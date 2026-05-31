@@ -70,7 +70,7 @@
             border-bottom: 5px solid #b91d1d;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
             transition: transform 0.3s ease;
-            text-align: center; /* Alineación del texto de la foto */
+            text-align: center; 
         }
 
         .gallery-item:hover {
@@ -79,12 +79,16 @@
 
         .gallery-item img {
             width: 100%;
-            /* NOTA MAFER: Le puse una altura fija de 250px a todas las fotos para que la cuadrícula se vea pareja */
             height: 250px; 
-            /* NOTA MAFER: Usar object-fit cover es clave para que las fotos no se apachen ni se estiren, solo se recorta el sobrante */
             object-fit: cover; 
             border-radius: 2px;
             border: 1px solid #444;
+            cursor: pointer; /* Cambia el cursor a una manita para indicar que se puede hacer clic */
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item img:hover {
+            opacity: 0.8; /* Pequeño efecto visual al pasar el mouse por la foto */
         }
 
         .gallery-item p {
@@ -94,6 +98,53 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #ffffff;
+        }
+
+        /* =========================================
+           ESTILOS DEL POP-UP (LIGHTBOX)
+           ========================================= */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 999999;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9); /* Fondo negro casi sólido */
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px); /* Efecto borroso de fondo */
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 4px;
+            border: 3px solid #b91d1d; /* Borde rojo característico del proyecto */
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            object-fit: contain; /* Asegura que la imagen no se distorsione al agrandarse */
+            animation: zoomIn 0.3s ease; /* Animación de entrada suave */
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #ffffff;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #b91d1d;
         }
     </style>
 </head>
@@ -139,6 +190,47 @@
     <footer>
         <p>&copy; 2026 Proyecto Web Ricardo Arjona | Galería Oficial</p>
     </footer>
+
+    <!-- =========================================
+         ESTRUCTURA DEL POP-UP (LIGHTBOX)
+         ========================================= -->
+    <div id="imageModal" class="modal">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="imgAmpliada" src="" alt="Imagen ampliada">
+    </div>
+
+    <!-- =========================================
+         SCRIPT PARA HACER FUNCIONAR EL POP-UP
+         ========================================= -->
+    <script>
+        // Obtenemos los elementos del HTML
+        const modal = document.getElementById("imageModal");
+        const imgAmpliada = document.getElementById("imgAmpliada");
+        const closeBtn = document.querySelector(".close-btn");
+        
+        // Seleccionamos todas las imágenes de la galería
+        const imagenesGaleria = document.querySelectorAll(".gallery-item img");
+
+        // Le agregamos el evento de clic a cada imagen
+        imagenesGaleria.forEach(img => {
+            img.addEventListener("click", function() {
+                modal.style.display = "flex"; // Mostramos la pantalla oscura
+                imgAmpliada.src = this.src; // Le pasamos la ruta de la imagen a la que se le dio clic
+            });
+        });
+
+        // Evento para cerrar dándole a la 'X'
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        // Evento para cerrar dándole clic a cualquier parte del fondo oscuro
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    </script>
 
 </body>
 </html>
